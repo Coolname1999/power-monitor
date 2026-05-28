@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>鏅烘収鐢ㄧ數鐩戞帶骞冲彴 路 鏃烘椇闆嗗洟鏉窞鎬诲巶</title>
+<title>智慧用电监控平台 · 旺旺集团杭州总厂</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,7 +37,7 @@
     overflow-x: hidden;
   }
 
-  /* 鈹€鈹€鈹€ HEADER 鈹€鈹€鈹€ */
+  /* ─── HEADER ─── */
   .header {
     background: linear-gradient(180deg, #071120 0%, var(--bg-deep) 100%);
     border-bottom: 1px solid var(--border);
@@ -91,7 +91,7 @@
     animation: pulse 1.5s infinite;
   }
 
-  /* 鈹€鈹€鈹€ ARCHITECTURE BAR 鈹€鈹€鈹€ */
+  /* ─── ARCHITECTURE BAR ─── */
   .arch-bar {
     background: linear-gradient(90deg, rgba(255,77,90,0.08) 0%, rgba(168,85,247,0.06) 50%, rgba(59,130,246,0.08) 100%);
     border-bottom: 1px solid var(--border);
@@ -110,7 +110,7 @@
   .arch-sep { color: var(--text-muted); }
   .arch-arrow { color: var(--text-muted); margin: 0 4px; }
 
-  /* 鈹€鈹€鈹€ OVERVIEW STRIP 鈹€鈹€鈹€ */
+  /* ─── OVERVIEW STRIP ─── */
   .overview-strip {
     display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
     background: var(--border); border-bottom: 1px solid var(--border);
@@ -123,12 +123,12 @@
   .overview-value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
   .overview-unit { font-size: 11px; color: var(--text-secondary); margin-left: 4px; font-weight: 400; }
 
-  /* 鈹€鈹€鈹€ MAIN LAYOUT 鈹€鈹€鈹€ */
+  /* ─── MAIN LAYOUT ─── */
   .main {
     display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px;
   }
 
-  /* 鈹€鈹€鈹€ TRANSFORMER BLOCK 鈹€鈹€鈹€ */
+  /* ─── TRANSFORMER BLOCK ─── */
   .transformer-block {
     background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
     overflow: hidden;
@@ -154,7 +154,7 @@
     padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border);
   }
 
-  /* 鈹€鈹€鈹€ MAIN METER 鈹€鈹€鈹€ */
+  /* ─── MAIN METER ─── */
   .main-meter {
     margin: 14px;
     background: linear-gradient(135deg, #071825 0%, #0a2035 100%);
@@ -198,12 +198,12 @@
   }
   .meter-energy-item.clickable { cursor: pointer; }
   .meter-energy-item.clickable:hover { border-color: var(--accent-blue); background: rgba(0, 170, 255, 0.08); }
-  .meter-energy-item.clickable::after { content: ' 鈫?; font-size: 9px; color: var(--accent-blue); }
+  .meter-energy-item.clickable::after { content: ' ↗'; font-size: 9px; color: var(--accent-blue); }
   .meter-energy-label { font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
   .meter-energy-value { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
   .meter-energy-unit { font-size: 9px; color: var(--text-muted); margin-top: 1px; }
 
-  /* 鈹€鈹€鈹€ CIRCUITS AREA 鈹€鈹€鈹€ */
+  /* ─── CIRCUITS AREA ─── */
   .circuits-area { padding: 0 14px 14px; }
   .circuits-header {
     font-size: 11px; color: var(--text-muted); letter-spacing: 2px;
@@ -211,7 +211,7 @@
   }
   .circuits-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 
-  /* 鈹€鈹€鈹€ CIRCUIT CARD 鈹€鈹€鈹€ */
+  /* ─── CIRCUIT CARD ─── */
   .circuit-card {
     background: rgba(0,0,0,0.25); border: 1px solid rgba(26, 58, 92, 0.8);
     border-radius: 8px; padding: 10px 8px; transition: all 0.25s;
@@ -268,7 +268,7 @@
   .circuit-energy-label { font-size: 8px; color: var(--text-muted); line-height: 1; }
   .circuit-energy-val { font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
 
-  /* 鈹€鈹€鈹€ STATUS INDICATOR 鈹€鈹€鈹€ */
+  /* ─── STATUS INDICATOR ─── */
   .status-badge {
     display: inline-flex; align-items: center; gap: 4px;
     font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 500; margin-bottom: 6px;
@@ -278,7 +278,7 @@
   .status-badge.alert { color: var(--accent-red); background: rgba(255, 82, 82, 0.1); border: 1px solid rgba(255, 82, 82, 0.25); }
   .status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 
-  /* 鈹€鈹€鈹€ MODAL 鈹€鈹€鈹€ */
+  /* ─── MODAL ─── */
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
     z-index: 1000; backdrop-filter: blur(4px); align-items: center; justify-content: center;
@@ -319,7 +319,7 @@
     border-radius: 8px; padding: 12px; border: 1px solid rgba(255,255,255,0.04);
   }
 
-  /* 鈹€鈹€鈹€ SCROLLBAR 鈹€鈹€鈹€ */
+  /* ─── SCROLLBAR ─── */
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #1a3a5c; border-radius: 2px; }
@@ -329,7 +329,7 @@
   @keyframes shimmer { 0% { opacity: 1; } 25% { opacity: 0.4; } 50% { opacity: 1; } }
   .updating { animation: shimmer 0.6s ease; }
 
-  /* 鈹€鈹€鈹€ EXPORT BUTTON 鈹€鈹€鈹€ */
+  /* ─── EXPORT BUTTON ─── */
   .export-btn {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 6px 14px;
@@ -351,7 +351,7 @@
   }
   .export-btn.done { animation: exportFlash 0.5s ease; }
 
-  /* 鈹€鈹€鈹€ COLOR HELPERS 鈹€鈹€鈹€ */
+  /* ─── COLOR HELPERS ─── */
   .text-blue { color: var(--accent-blue); }
   .text-cyan { color: var(--accent-cyan); }
   .text-green { color: var(--accent-green); }
@@ -361,7 +361,7 @@
   .text-purple { color: var(--accent-purple); }
   .text-muted { color: var(--text-muted); }
 
-  /* 鈹€鈹€鈹€ FOOTER 鈹€鈹€鈹€ */
+  /* ─── FOOTER ─── */
   .footer {
     text-align: center; padding: 12px; font-size: 11px;
     color: var(--text-muted); border-top: 1px solid var(--border); letter-spacing: 1px;
@@ -370,19 +370,19 @@
 </head>
 <body>
 
-<!-- 鈺愨晲鈺愨晲鈺愨晲 HEADER 鈺愨晲鈺愨晲鈺愨晲 -->
+<!-- ══════ HEADER ══════ -->
 <header class="header">
   <div class="header-left">
-    <div class="header-icon">鈿?/div>
+    <div class="header-icon">⚡</div>
     <div>
-      <div class="header-title">鏅?鎱?鐢?鐢?鐩?鎺?骞?鍙?/div>
-      <div class="header-subtitle">鏃烘椇闆嗗洟鏉窞鎬诲巶 路 閰嶇數鎴?#1</div>
+      <div class="header-title">智 慧 用 电 监 控 平 台</div>
+      <div class="header-subtitle">旺旺集团杭州总厂 · 配电房 #1</div>
     </div>
   </div>
   <div class="header-right">
     <div class="header-status">
       <div class="status-dot"></div>
-      绯荤粺杩愯姝ｅ父
+      系统运行正常
     </div>
     <div>
       <div class="header-time" id="clock">--:--:--</div>
@@ -397,235 +397,235 @@
         <polyline points="7 10 12 15 17 10"/>
         <line x1="12" y1="15" x2="12" y2="3"/>
       </svg>
-      瀵煎嚭浠婃棩鐢ㄧ數
+      导出今日用电
     </button>
   </div>
 </header>
 
-<!-- 鈺愨晲鈺愨晲鈺愨晲 ARCHITECTURE BAR 鈺愨晲鈺愨晲鈺愨晲 -->
+<!-- ══════ ARCHITECTURE BAR ══════ -->
 <div class="arch-bar">
-  <span style="font-weight:600;color:var(--text-primary)">鐢靛姏鏋舵瀯</span>
-  <span class="arch-badge red">D01 鎸叴绾挎湁鍔熸€?/span>
-  <span class="arch-sep">10KV 路 脳1500</span>
-  <span class="arch-arrow">鈫?/span>
-  <span class="arch-badge purple">1# 220V鍙樺帇鍣?/span>
-  <span class="arch-sep">9鍥炶矾</span>
-  <span class="arch-arrow">鈫?/span>
-  <span class="arch-badge blue">2# 380V鍙樺帇鍣?/span>
-  <span class="arch-sep">12鍥炶矾</span>
-  <span style="margin-left:auto;font-size:11px;color:var(--text-muted)">涓€绾ч厤鐢佃〃 21涓?路 绾㈣壊灞傜骇</span>
+  <span style="font-weight:600;color:var(--text-primary)">电力架构</span>
+  <span class="arch-badge red">D01 振兴线有功总</span>
+  <span class="arch-sep">10KV · ×1500</span>
+  <span class="arch-arrow">→</span>
+  <span class="arch-badge purple">1# 220V变压器</span>
+  <span class="arch-sep">9回路</span>
+  <span class="arch-arrow">→</span>
+  <span class="arch-badge blue">2# 380V变压器</span>
+  <span class="arch-sep">12回路</span>
+  <span style="margin-left:auto;font-size:11px;color:var(--text-muted)">一级配电表 21个 · 红色层级</span>
 </div>
 
-<!-- 鈺愨晲鈺愨晲鈺愨晲 OVERVIEW STRIP 鈺愨晲鈺愨晲鈺愨晲 -->
+<!-- ══════ OVERVIEW STRIP ══════ -->
 <div class="overview-strip">
   <div class="overview-item">
-    <div class="overview-label">鎬诲疄鏃惰礋鑽?/div>
-    <div class="overview-value text-cyan" id="ov-load">鈥?/div>
+    <div class="overview-label">总实时负荷</div>
+    <div class="overview-value text-cyan" id="ov-load">—</div>
     <div style="font-size:11px;color:var(--text-muted)">kW</div>
   </div>
   <div class="overview-item">
-    <div class="overview-label">浠婃棩鎬荤敤鐢甸噺</div>
-    <div class="overview-value text-blue" id="ov-day">鈥?/div>
+    <div class="overview-label">今日总用电量</div>
+    <div class="overview-value text-blue" id="ov-day">—</div>
     <div style="font-size:11px;color:var(--text-muted)">kWh</div>
   </div>
   <div class="overview-item">
-    <div class="overview-label">鏈湀鎬荤敤鐢甸噺</div>
-    <div class="overview-value text-green" id="ov-month">鈥?/div>
+    <div class="overview-label">本月总用电量</div>
+    <div class="overview-value text-green" id="ov-month">—</div>
     <div style="font-size:11px;color:var(--text-muted)">kWh</div>
   </div>
   <div class="overview-item">
-    <div class="overview-label">鍦ㄧ嚎鍥炶矾鏁?/div>
+    <div class="overview-label">在线回路数</div>
     <div class="overview-value text-yellow">21<span class="overview-unit">/21</span></div>
   </div>
   <div class="overview-item">
-    <div class="overview-label">鍛婅鏁?/div>
+    <div class="overview-label">告警数</div>
     <div class="overview-value text-red" id="ov-alert">0</div>
-    <div style="font-size:11px;color:var(--text-muted)">鏉℃椿璺冨憡璀?/div>
+    <div style="font-size:11px;color:var(--text-muted)">条活跃告警</div>
   </div>
 </div>
 
-<!-- 鈺愨晲鈺愨晲鈺愨晲 MAIN CONTENT 鈺愨晲鈺愨晲鈺愨晲 -->
+<!-- ══════ MAIN CONTENT ══════ -->
 <main class="main">
 
-  <!-- 鈹€鈹€ TRANSFORMER 1# 220V 鈹€鈹€ -->
+  <!-- ── TRANSFORMER 1# 220V ── -->
   <div class="transformer-block t1" id="block-1">
     <div class="transformer-header">
       <div class="transformer-title">
         <span class="transformer-badge t1">T-01</span>
-        <span class="transformer-name">1# 220V鍙樺帇鍣?/span>
-        <span class="transformer-tag">涓嬫寕 9 鍥炶矾</span>
+        <span class="transformer-name">1# 220V变压器</span>
+        <span class="transformer-tag">下挂 9 回路</span>
       </div>
-      <div class="live-badge"><span class="live-dot"></span>瀹炴椂鏇存柊</div>
+      <div class="live-badge"><span class="live-dot"></span>实时更新</div>
     </div>
-    <!-- 鎬昏〃 ZB-01 -->
+    <!-- 总表 ZB-01 -->
     <div class="main-meter">
-      <div class="meter-label">鈻?鍙樺帇鍣ㄦ€昏〃 路 ZB-01</div>
+      <div class="meter-label">▌ 变压器总表 · ZB-01</div>
       <div class="meter-main-row">
-        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ia','ZB-01 路 IA鐩哥數娴佽秼鍔?)">
-          <div class="meter-phase-header">IA 鐩?/div>
+        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ia','ZB-01 · IA相电流趋势')">
+          <div class="meter-phase-header">IA 相</div>
           <div class="meter-phase-live">
-            <span class="meter-phase-live-val text-cyan" id="A-main-ia">鈥?/span>
+            <span class="meter-phase-live-val text-cyan" id="A-main-ia">—</span>
             <span class="meter-phase-live-unit">A</span>
           </div>
           <div class="meter-phase-divider"></div>
           <div class="meter-phase-extremes">
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="A-main-max-ia">鈥?/div></div>
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="A-main-min-ia">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最大</div><div class="meter-phase-ex-val text-orange" id="A-main-max-ia">—</div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最小</div><div class="meter-phase-ex-val text-blue" id="A-main-min-ia">—</div></div>
           </div>
         </div>
-        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ib','ZB-01 路 IB鐩哥數娴佽秼鍔?)">
-          <div class="meter-phase-header">IB 鐩?/div>
+        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ib','ZB-01 · IB相电流趋势')">
+          <div class="meter-phase-header">IB 相</div>
           <div class="meter-phase-live">
-            <span class="meter-phase-live-val text-cyan" id="A-main-ib">鈥?/span>
+            <span class="meter-phase-live-val text-cyan" id="A-main-ib">—</span>
             <span class="meter-phase-live-unit">A</span>
           </div>
           <div class="meter-phase-divider"></div>
           <div class="meter-phase-extremes">
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="A-main-max-ib">鈥?/div></div>
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="A-main-min-ib">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最大</div><div class="meter-phase-ex-val text-orange" id="A-main-max-ib">—</div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最小</div><div class="meter-phase-ex-val text-blue" id="A-main-min-ib">—</div></div>
           </div>
         </div>
-        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ic','ZB-01 路 IC鐩哥數娴佽秼鍔?)">
-          <div class="meter-phase-header">IC 鐩?/div>
+        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ic','ZB-01 · IC相电流趋势')">
+          <div class="meter-phase-header">IC 相</div>
           <div class="meter-phase-live">
-            <span class="meter-phase-live-val text-cyan" id="A-main-ic">鈥?/span>
+            <span class="meter-phase-live-val text-cyan" id="A-main-ic">—</span>
             <span class="meter-phase-live-unit">A</span>
           </div>
           <div class="meter-phase-divider"></div>
           <div class="meter-phase-extremes">
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="A-main-max-ic">鈥?/div></div>
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="A-main-min-ic">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最大</div><div class="meter-phase-ex-val text-orange" id="A-main-max-ic">—</div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最小</div><div class="meter-phase-ex-val text-blue" id="A-main-min-ic">—</div></div>
           </div>
         </div>
       </div>
       <div class="meter-info-row">
         <div class="meter-info-item">
-          <div class="meter-info-label">褰撳墠鍔熺巼</div>
-          <div class="meter-info-val text-blue" id="A-main-power">鈥?/div>
+          <div class="meter-info-label">当前功率</div>
+          <div class="meter-info-val text-blue" id="A-main-power">—</div>
           <div class="meter-info-unit">kW</div>
         </div>
         <div class="meter-info-item">
-          <div class="meter-info-label">鍔熺巼鍥犳暟</div>
-          <div class="meter-info-val text-green" id="A-main-pf">鈥?/div>
-          <div class="meter-info-unit">cos 蠁</div>
+          <div class="meter-info-label">功率因数</div>
+          <div class="meter-info-val text-green" id="A-main-pf">—</div>
+          <div class="meter-info-unit">cos φ</div>
         </div>
       </div>
       <div class="meter-energy-row">
         <div class="meter-energy-item">
-          <div class="meter-energy-label">浠婃棩鐢ㄧ數閲?/div>
-          <div class="meter-energy-value text-cyan" id="A-main-day">鈥?/div>
+          <div class="meter-energy-label">今日用电量</div>
+          <div class="meter-energy-value text-cyan" id="A-main-day">—</div>
           <div class="meter-energy-unit">kWh</div>
         </div>
-        <div class="meter-energy-item clickable" onclick="openModal('A-main','ZB-01 路 1# 220V鍙樺帇鍣ㄦ€昏〃')">
-          <div class="meter-energy-label">鏈湀鐢ㄧ數閲?/div>
-          <div class="meter-energy-value text-green" id="A-main-month">鈥?/div>
+        <div class="meter-energy-item clickable" onclick="openModal('A-main','ZB-01 · 1# 220V变压器总表')">
+          <div class="meter-energy-label">本月用电量</div>
+          <div class="meter-energy-value text-green" id="A-main-month">—</div>
           <div class="meter-energy-unit">kWh</div>
         </div>
       </div>
     </div>
-    <!-- 9鍥炶矾 -->
+    <!-- 9回路 -->
     <div class="circuits-area">
-      <div class="circuits-header">鈻?涓€绾ч厤鐢佃〃锛圖01.1 ~ D01.9锛?/div>
+      <div class="circuits-header">▌ 一级配电表（D01.1 ~ D01.9）</div>
       <div class="circuits-grid" id="circuits-1"></div>
     </div>
   </div>
 
-  <!-- 鈹€鈹€ TRANSFORMER 2# 380V 鈹€鈹€ -->
+  <!-- ── TRANSFORMER 2# 380V ── -->
   <div class="transformer-block t2" id="block-2">
     <div class="transformer-header">
       <div class="transformer-title">
         <span class="transformer-badge t2">T-02</span>
-        <span class="transformer-name">2# 380V鍙樺帇鍣?/span>
-        <span class="transformer-tag">涓嬫寕 12 鍥炶矾</span>
+        <span class="transformer-name">2# 380V变压器</span>
+        <span class="transformer-tag">下挂 12 回路</span>
       </div>
-      <div class="live-badge"><span class="live-dot"></span>瀹炴椂鏇存柊</div>
+      <div class="live-badge"><span class="live-dot"></span>实时更新</div>
     </div>
-    <!-- 鎬昏〃 ZB-02 -->
+    <!-- 总表 ZB-02 -->
     <div class="main-meter">
-      <div class="meter-label">鈻?鍙樺帇鍣ㄦ€昏〃 路 ZB-02</div>
+      <div class="meter-label">▌ 变压器总表 · ZB-02</div>
       <div class="meter-main-row">
-        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ia','ZB-02 路 IA鐩哥數娴佽秼鍔?)">
-          <div class="meter-phase-header">IA 鐩?/div>
+        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ia','ZB-02 · IA相电流趋势')">
+          <div class="meter-phase-header">IA 相</div>
           <div class="meter-phase-live">
-            <span class="meter-phase-live-val text-cyan" id="B-main-ia">鈥?/span>
+            <span class="meter-phase-live-val text-cyan" id="B-main-ia">—</span>
             <span class="meter-phase-live-unit">A</span>
           </div>
           <div class="meter-phase-divider"></div>
           <div class="meter-phase-extremes">
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="B-main-max-ia">鈥?/div></div>
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="B-main-min-ia">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最大</div><div class="meter-phase-ex-val text-orange" id="B-main-max-ia">—</div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最小</div><div class="meter-phase-ex-val text-blue" id="B-main-min-ia">—</div></div>
           </div>
         </div>
-        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ib','ZB-02 路 IB鐩哥數娴佽秼鍔?)">
-          <div class="meter-phase-header">IB 鐩?/div>
+        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ib','ZB-02 · IB相电流趋势')">
+          <div class="meter-phase-header">IB 相</div>
           <div class="meter-phase-live">
-            <span class="meter-phase-live-val text-cyan" id="B-main-ib">鈥?/span>
+            <span class="meter-phase-live-val text-cyan" id="B-main-ib">—</span>
             <span class="meter-phase-live-unit">A</span>
           </div>
           <div class="meter-phase-divider"></div>
           <div class="meter-phase-extremes">
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="B-main-max-ib">鈥?/div></div>
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="B-main-min-ib">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最大</div><div class="meter-phase-ex-val text-orange" id="B-main-max-ib">—</div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最小</div><div class="meter-phase-ex-val text-blue" id="B-main-min-ib">—</div></div>
           </div>
         </div>
-        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ic','ZB-02 路 IC鐩哥數娴佽秼鍔?)">
-          <div class="meter-phase-header">IC 鐩?/div>
+        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ic','ZB-02 · IC相电流趋势')">
+          <div class="meter-phase-header">IC 相</div>
           <div class="meter-phase-live">
-            <span class="meter-phase-live-val text-cyan" id="B-main-ic">鈥?/span>
+            <span class="meter-phase-live-val text-cyan" id="B-main-ic">—</span>
             <span class="meter-phase-live-unit">A</span>
           </div>
           <div class="meter-phase-divider"></div>
           <div class="meter-phase-extremes">
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="B-main-max-ic">鈥?/div></div>
-            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="B-main-min-ic">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最大</div><div class="meter-phase-ex-val text-orange" id="B-main-max-ic">—</div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">最小</div><div class="meter-phase-ex-val text-blue" id="B-main-min-ic">—</div></div>
           </div>
         </div>
       </div>
       <div class="meter-info-row">
         <div class="meter-info-item">
-          <div class="meter-info-label">褰撳墠鍔熺巼</div>
-          <div class="meter-info-val text-blue" id="B-main-power">鈥?/div>
+          <div class="meter-info-label">当前功率</div>
+          <div class="meter-info-val text-blue" id="B-main-power">—</div>
           <div class="meter-info-unit">kW</div>
         </div>
         <div class="meter-info-item">
-          <div class="meter-info-label">鍔熺巼鍥犳暟</div>
-          <div class="meter-info-val text-green" id="B-main-pf">鈥?/div>
-          <div class="meter-info-unit">cos 蠁</div>
+          <div class="meter-info-label">功率因数</div>
+          <div class="meter-info-val text-green" id="B-main-pf">—</div>
+          <div class="meter-info-unit">cos φ</div>
         </div>
       </div>
       <div class="meter-energy-row">
         <div class="meter-energy-item">
-          <div class="meter-energy-label">浠婃棩鐢ㄧ數閲?/div>
-          <div class="meter-energy-value text-cyan" id="B-main-day">鈥?/div>
+          <div class="meter-energy-label">今日用电量</div>
+          <div class="meter-energy-value text-cyan" id="B-main-day">—</div>
           <div class="meter-energy-unit">kWh</div>
         </div>
-        <div class="meter-energy-item clickable" onclick="openModal('B-main','ZB-02 路 2# 380V鍙樺帇鍣ㄦ€昏〃')">
-          <div class="meter-energy-label">鏈湀鐢ㄧ數閲?/div>
-          <div class="meter-energy-value text-green" id="B-main-month">鈥?/div>
+        <div class="meter-energy-item clickable" onclick="openModal('B-main','ZB-02 · 2# 380V变压器总表')">
+          <div class="meter-energy-label">本月用电量</div>
+          <div class="meter-energy-value text-green" id="B-main-month">—</div>
           <div class="meter-energy-unit">kWh</div>
         </div>
       </div>
     </div>
-    <!-- 12鍥炶矾 -->
+    <!-- 12回路 -->
     <div class="circuits-area">
-      <div class="circuits-header">鈻?涓€绾ч厤鐢佃〃锛圖01.10 ~ D01.21锛?/div>
+      <div class="circuits-header">▌ 一级配电表（D01.10 ~ D01.21）</div>
       <div class="circuits-grid" id="circuits-2"></div>
     </div>
   </div>
 
 </main>
 
-<footer class="footer">鏅烘収鐢ㄧ數鐩戞帶绯荤粺 路 鏁版嵁姣?5s 鑷姩鍒锋柊 路 浠呬緵鍐呴儴浣跨敤</footer>
+<footer class="footer">智慧用电监控系统 · 数据每 5s 自动刷新 · 仅供内部使用</footer>
 
-<!-- 鈺愨晲鈺愨晲鈺愨晲 MODAL 鈺愨晲鈺愨晲鈺愨晲 -->
+<!-- ══════ MODAL ══════ -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title-group">
-        <div class="modal-title" id="modal-title">姣忔棩鐢ㄧ數閲忔槑缁?/div>
-        <div class="modal-subtitle" id="modal-subtitle">鈥?/div>
+        <div class="modal-title" id="modal-title">每日用电量明细</div>
+        <div class="modal-subtitle" id="modal-subtitle">—</div>
       </div>
-      <button class="modal-close" onclick="closeModalDirect()">鉁?/button>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
     </div>
     <div class="modal-body">
       <div class="modal-stat-row" id="modal-stats"></div>
@@ -637,35 +637,37 @@
 </div>
 
 <script>
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  REAL ARCHITECTURE DATA
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-// 1# 220V 鍙樺帇鍣?鈥?9鍥炶矾
+// ═══════════════════════════════════════════
+//  REAL ARCHITECTURE DATA
+// ═══════════════════════════════════════════
+
+// 1# 220V 变压器 — 9回路
 const circuitsT1 = [
-  { id: 'A-01', num: 'D01.1',  name: 'MP5涓夊伐绋?,       ct: '400/5' },
-  { id: 'A-02', num: 'D01.2',  name: 'MP6涓夊伐绋?,       ct: '400/5' },
-  { id: 'A-03', num: 'D01.3',  name: 'MP8涓€宸ョ▼',       ct: '200/5' },
-  { id: 'A-04', num: 'D01.4',  name: 'MP9涓€宸ョ▼',       ct: '400/5' },
-  { id: 'A-05', num: 'D01.5',  name: 'MP10涓€宸ョ▼绯背绾?, ct: '400/5' },
-  { id: 'A-06', num: 'D01.6',  name: 'MP11浜屽伐绋?,       ct: '400/5' },
-  { id: 'A-07', num: 'D01.7',  name: 'MP1浜屽伐绋?,        ct: '400/5' },
-  { id: 'A-08', num: 'D01.8',  name: 'MP3浜屽伐绋?,        ct: '400/5' },
-  { id: 'A-09', num: 'D01.9',  name: 'MP4涓€宸ョ▼',        ct: '150/5' },
+  { id: 'A-01', num: 'D01.1',  name: 'MP5三工程',       ct: '400/5' },
+  { id: 'A-02', num: 'D01.2',  name: 'MP6三工程',       ct: '400/5' },
+  { id: 'A-03', num: 'D01.3',  name: 'MP8一工程',       ct: '200/5' },
+  { id: 'A-04', num: 'D01.4',  name: 'MP9一工程',       ct: '400/5' },
+  { id: 'A-05', num: 'D01.5',  name: 'MP10一工程糯米线', ct: '400/5' },
+  { id: 'A-06', num: 'D01.6',  name: 'MP11二工程',       ct: '400/5' },
+  { id: 'A-07', num: 'D01.7',  name: 'MP1二工程',        ct: '400/5' },
+  { id: 'A-08', num: 'D01.8',  name: 'MP3二工程',        ct: '400/5' },
+  { id: 'A-09', num: 'D01.9',  name: 'MP4一工程',        ct: '150/5' },
 ];
 
-// 2# 380V 鍙樺帇鍣?鈥?12鍥炶矾
+// 2# 380V 变压器 — 12回路
 const circuitsT2 = [
-  { id: 'B-01', num: 'D01.10', name: 'LP1绯背绾?,       ct: '300/5' },
-  { id: 'B-02', num: 'D01.11', name: 'LP-2涓夊伐绋?,       ct: '400/5' },
-  { id: 'B-03', num: 'D01.12', name: 'LP3(4)涓夊伐绋?,     ct: '400/5' },
-  { id: 'B-04', num: 'D01.13', name: 'LP15浜屽伐绋?,       ct: '400/5' },
-  { id: 'B-05', num: 'D01.14', name: 'LP6鍔炲叕瀹?,        ct: '150/5' },
-  { id: 'B-06', num: 'D01.15', name: 'LP3浜屽伐绋嬪柗绯?,    ct: '200/5' },
-  { id: 'B-07', num: 'D01.16', name: 'LP7瀹堝崼',          ct: '鈥? },
-  { id: 'B-08', num: 'D01.17', name: 'LP9鍌ㄨ繍',          ct: '鈥? },
-  { id: 'B-09', num: 'D01.18', name: 'LP10涓€宸ョ▼',       ct: '400/5' },
-  { id: 'B-10', num: 'D01.19', name: 'LP11閰嶇數鎴跨┖璋?,   ct: '鈥? },
-  { id: 'B-11', num: 'D01.20', name: 'LP8姹℃按',          ct: '400/5' },
-  { id: 'B-12', num: 'D01.21', name: '姹℃按浜?,           ct: '200/5' },
+  { id: 'B-01', num: 'D01.10', name: 'LP1糯米线',       ct: '300/5' },
+  { id: 'B-02', num: 'D01.11', name: 'LP-2三工程',       ct: '400/5' },
+  { id: 'B-03', num: 'D01.12', name: 'LP3(4)三工程',     ct: '400/5' },
+  { id: 'B-04', num: 'D01.13', name: 'LP15二工程',       ct: '400/5' },
+  { id: 'B-05', num: 'D01.14', name: 'LP6办公室',        ct: '150/5' },
+  { id: 'B-06', num: 'D01.15', name: 'LP3二工程喷糖',    ct: '200/5' },
+  { id: 'B-07', num: 'D01.16', name: 'LP7守卫',          ct: '—' },
+  { id: 'B-08', num: 'D01.17', name: 'LP9储运',          ct: '—' },
+  { id: 'B-09', num: 'D01.18', name: 'LP10一工程',       ct: '400/5' },
+  { id: 'B-10', num: 'D01.19', name: 'LP11配电房空调',   ct: '—' },
+  { id: 'B-11', num: 'D01.20', name: 'LP8污水',          ct: '400/5' },
+  { id: 'B-12', num: 'D01.21', name: '污水二',           ct: '200/5' },
 ];
 
 // Base current for each circuit (derived from CT ratio)
@@ -682,8 +684,10 @@ const circuitIdsB = circuitsT2.map(c => c.id);
 const circuitBaseA = circuitsT1.map(c => baseFromCT(c.ct));
 const circuitBaseB = circuitsT2.map(c => baseFromCT(c.ct));
 
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  STATE
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?const state = {};
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+const state = {};
 
 function genDailyArr(base, variance, sinus = true) {
   const days = [];
@@ -747,8 +751,10 @@ circuitBaseB.forEach((b, i) => initCircuit(circuitIdsB[i], b));
 initMain('A-main', circuitIdsA);
 initMain('B-main', circuitIdsB);
 
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  RENDER CIRCUITS
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+// ═══════════════════════════════════════════
+//  RENDER CIRCUITS
+// ═══════════════════════════════════════════
+
 function renderCircuits() {
   function makeCard(c, idx, total) {
     const id = c.id;
@@ -760,46 +766,46 @@ function renderCircuits() {
     <div class="circuit-card status-${sClass}" id="card-${id}">
       <div class="circuit-card-header">
         <span class="circuit-id-tag">${c.num}</span>
-        <span class="status-badge ${sClass}">${sClass==='normal'?'姝ｅ父':sClass==='warn'?'棰勮':'鍛婅'}</span>
+        <span class="status-badge ${sClass}">${sClass==='normal'?'正常':sClass==='warn'?'预警':'告警'}</span>
       </div>
       <div class="circuit-name" title="${c.name}">${c.name}</div>
       <div class="circuit-phases-row">
-        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ia','${c.num} ${c.name} 路 IA鐩哥數娴佽秼鍔?)">
+        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ia','${c.num} ${c.name} · IA相电流趋势')">
           <div class="circuit-phase-label">IA</div>
-          <div class="circuit-phase-live text-cyan" id="${id}-ia">鈥?span class="circuit-phase-live-unit">A</span></div>
+          <div class="circuit-phase-live text-cyan" id="${id}-ia">—<span class="circuit-phase-live-unit">A</span></div>
           <div class="circuit-phase-ex-divider"></div>
           <div class="circuit-phase-ex-row">
-            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€澶?/div><div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ia">${s.maxI.ia}</div></div>
-            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€灏?/div><div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ia">${s.minI.ia}</div></div>
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">最大</div><div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ia">${s.maxI.ia}</div></div>
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">最小</div><div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ia">${s.minI.ia}</div></div>
           </div>
         </div>
-        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ib','${c.num} ${c.name} 路 IB鐩哥數娴佽秼鍔?)">
+        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ib','${c.num} ${c.name} · IB相电流趋势')">
           <div class="circuit-phase-label">IB</div>
-          <div class="circuit-phase-live text-cyan" id="${id}-ib">鈥?span class="circuit-phase-live-unit">A</span></div>
+          <div class="circuit-phase-live text-cyan" id="${id}-ib">—<span class="circuit-phase-live-unit">A</span></div>
           <div class="circuit-phase-ex-divider"></div>
           <div class="circuit-phase-ex-row">
-            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€澶?/div><div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ib">${s.maxI.ib}</div></div>
-            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€灏?/div><div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ib">${s.minI.ib}</div></div>
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">最大</div><div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ib">${s.maxI.ib}</div></div>
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">最小</div><div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ib">${s.minI.ib}</div></div>
           </div>
         </div>
-        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ic','${c.num} ${c.name} 路 IC鐩哥數娴佽秼鍔?)">
+        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ic','${c.num} ${c.name} · IC相电流趋势')">
           <div class="circuit-phase-label">IC</div>
-          <div class="circuit-phase-live text-cyan" id="${id}-ic">鈥?span class="circuit-phase-live-unit">A</span></div>
+          <div class="circuit-phase-live text-cyan" id="${id}-ic">—<span class="circuit-phase-live-unit">A</span></div>
           <div class="circuit-phase-ex-divider"></div>
           <div class="circuit-phase-ex-row">
-            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€澶?/div><div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ic">${s.maxI.ic}</div></div>
-            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€灏?/div><div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ic">${s.minI.ic}</div></div>
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">最大</div><div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ic">${s.maxI.ic}</div></div>
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">最小</div><div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ic">${s.minI.ic}</div></div>
           </div>
         </div>
       </div>
-      <div class="circuit-power" id="${id}-power">鈥?kW</div>
+      <div class="circuit-power" id="${id}-power">— kW</div>
       <div class="circuit-energy-row">
         <div class="circuit-energy-item">
-          <div class="circuit-energy-label">鏃ョ敤鐢?kWh</div>
+          <div class="circuit-energy-label">日用电 kWh</div>
           <div class="circuit-energy-val text-cyan" id="${id}-day">${s.dayKwh}</div>
         </div>
         <div class="circuit-energy-item" onclick="openModal('${id}','${c.num} ${c.name}')">
-          <div class="circuit-energy-label">鏈堢敤鐢?kWh 鈫?/div>
+          <div class="circuit-energy-label">月用电 kWh ↗</div>
           <div class="circuit-energy-val text-green" id="${id}-month">${s.monthKwh}</div>
         </div>
       </div>
@@ -810,8 +816,10 @@ function renderCircuits() {
   document.getElementById('circuits-2').innerHTML = circuitsT2.map(c => makeCard(c)).join('');
 }
 
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  LIVE DATA UPDATE
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+// ═══════════════════════════════════════════
+//  LIVE DATA UPDATE
+// ═══════════════════════════════════════════
+
 function setVal(id, val) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -906,16 +914,20 @@ function updateData() {
   setVal('ov-month', totalMonth.toFixed(0));
 }
 
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  CLOCK
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+// ═══════════════════════════════════════════
+//  CLOCK
+// ═══════════════════════════════════════════
+
 function updateClock() {
   const now = new Date();
   document.getElementById('clock').textContent = now.toLocaleTimeString('zh-CN', {hour12: false});
   document.getElementById('datestr').textContent = now.toLocaleDateString('zh-CN', {year:'numeric',month:'2-digit',day:'2-digit'});
 }
 
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  MODAL (kWh bar chart)
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+// ═══════════════════════════════════════════
+//  MODAL (kWh bar chart)
+// ═══════════════════════════════════════════
+
 let chartInstance = null;
 
 function openModal(id, label) {
@@ -924,21 +936,21 @@ function openModal(id, label) {
 
   if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
 
-  document.getElementById('modal-title').textContent = '姣忔棩鐢ㄧ數閲忔槑缁?路 ' + label;
-  document.getElementById('modal-subtitle').textContent = `鏈湀宸茬粺璁?${s.dailyData.length} 澶?路 鍚堣 ${s.monthKwh} kWh`;
+  document.getElementById('modal-title').textContent = '每日用电量明细 · ' + label;
+  document.getElementById('modal-subtitle').textContent = `本月已统计 ${s.dailyData.length} 天 · 合计 ${s.monthKwh} kWh`;
 
   const maxD = Math.max(...s.dailyData);
   const avgD = (s.dailyData.reduce((a,b)=>a+b,0)/s.dailyData.length).toFixed(1);
   document.getElementById('modal-stats').innerHTML = `
-    <div class="modal-stat"><div class="modal-stat-label">鏈堢疮璁＄敤鐢?/div><div class="modal-stat-val text-green">${s.monthKwh}<span class="modal-stat-unit"> kWh</span></div></div>
-    <div class="modal-stat"><div class="modal-stat-label">鏃ュ潎鐢ㄧ數</div><div class="modal-stat-val text-cyan">${avgD}<span class="modal-stat-unit"> kWh</span></div></div>
-    <div class="modal-stat"><div class="modal-stat-label">鍗曟棩宄板€?/div><div class="modal-stat-val text-orange">${maxD}<span class="modal-stat-unit"> kWh</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">月累计用电</div><div class="modal-stat-val text-green">${s.monthKwh}<span class="modal-stat-unit"> kWh</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">日均用电</div><div class="modal-stat-val text-cyan">${avgD}<span class="modal-stat-unit"> kWh</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">单日峰值</div><div class="modal-stat-val text-orange">${maxD}<span class="modal-stat-unit"> kWh</span></div></div>
   `;
 
   document.getElementById('modal-overlay').classList.add('active');
 
   const ctx = document.getElementById('modalChart').getContext('2d');
-  const labels = s.dailyData.map((_, i) => `${i+1}鏃);
+  const labels = s.dailyData.map((_, i) => `${i+1}日`);
   const avg = +avgD;
 
   chartInstance = new Chart(ctx, {
@@ -947,14 +959,14 @@ function openModal(id, label) {
       labels,
       datasets: [
         {
-          label: '鏃ョ敤鐢甸噺 (kWh)',
+          label: '日用电量 (kWh)',
           data: s.dailyData,
           backgroundColor: s.dailyData.map(v => v > avg * 1.2 ? 'rgba(255,145,0,0.7)' : 'rgba(0,170,255,0.55)'),
           borderColor: s.dailyData.map(v => v > avg * 1.2 ? '#ff9100' : '#00aaff'),
           borderWidth: 1, borderRadius: 3,
         },
         {
-          label: '鏃ュ潎绾?,
+          label: '日均线',
           data: new Array(s.dailyData.length).fill(avg),
           type: 'line',
           borderColor: 'rgba(0,229,255,0.7)', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, fill: false,
@@ -989,8 +1001,10 @@ function closeModalDirect() {
   document.getElementById('modal-overlay').classList.remove('active');
 }
 
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  PHASE CURRENT TREND MODAL
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+// ═══════════════════════════════════════════
+//  PHASE CURRENT TREND MODAL
+// ═══════════════════════════════════════════
+
 function openPhaseModal(id, phase, label) {
   const s = state[id];
   if (!s || !s.dailyPhaseData) return;
@@ -1003,19 +1017,19 @@ function openPhaseModal(id, phase, label) {
   const curMin = +s.minI[phase].toFixed(1);
   const avgVal = (data.reduce((a,b)=>a+b,0)/data.length).toFixed(1);
 
-  document.getElementById('modal-title').textContent = phaseLabel + '鐩哥數娴佹湀搴﹁秼鍔?路 ' + label;
-  document.getElementById('modal-subtitle').textContent = `鍘嗗彶鏋佸€?鈫?鏈€澶?${curMax}A / 鏈€灏?${curMin}A  路  鏈湀宸茬粺璁?${data.length} 澶ー;
+  document.getElementById('modal-title').textContent = phaseLabel + '相电流月度趋势 · ' + label;
+  document.getElementById('modal-subtitle').textContent = `历史极值 → 最大 ${curMax}A / 最小 ${curMin}A  ·  本月已统计 ${data.length} 天`;
 
   document.getElementById('modal-stats').innerHTML = `
-    <div class="modal-stat"><div class="modal-stat-label">鍘嗗彶鏈€澶х數娴?/div><div class="modal-stat-val text-orange">${curMax}<span class="modal-stat-unit"> A</span></div></div>
-    <div class="modal-stat"><div class="modal-stat-label">鏃ュ潎鐢垫祦</div><div class="modal-stat-val text-cyan">${avgVal}<span class="modal-stat-unit"> A</span></div></div>
-    <div class="modal-stat"><div class="modal-stat-label">鍘嗗彶鏈€灏忕數娴?/div><div class="modal-stat-val text-blue">${curMin}<span class="modal-stat-unit"> A</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">历史最大电流</div><div class="modal-stat-val text-orange">${curMax}<span class="modal-stat-unit"> A</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">日均电流</div><div class="modal-stat-val text-cyan">${avgVal}<span class="modal-stat-unit"> A</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">历史最小电流</div><div class="modal-stat-val text-blue">${curMin}<span class="modal-stat-unit"> A</span></div></div>
   `;
 
   document.getElementById('modal-overlay').classList.add('active');
 
   const ctx = document.getElementById('modalChart').getContext('2d');
-  const labels = data.map((_, i) => `${i+1}鏃);
+  const labels = data.map((_, i) => `${i+1}日`);
   const avg = +avgVal;
 
   chartInstance = new Chart(ctx, {
@@ -1024,14 +1038,14 @@ function openPhaseModal(id, phase, label) {
       labels,
       datasets: [
         {
-          label: `${phaseLabel}鐩告棩鐢垫祦 (A)`,
+          label: `${phaseLabel}相日电流 (A)`,
           data: data,
           borderColor: '#00e5ff', backgroundColor: 'rgba(0,229,255,0.08)',
           borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#00e5ff',
           pointBorderColor: '#0d1e35', pointBorderWidth: 1.5, tension: 0.35, fill: true,
         },
         {
-          label: '鏃ュ潎绾?,
+          label: '日均线',
           data: new Array(data.length).fill(avg),
           type: 'line', borderColor: 'rgba(255,215,64,0.7)',
           borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, fill: false,
@@ -1060,8 +1074,10 @@ function openPhaseModal(id, phase, label) {
   });
 }
 
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  EXPORT CSV
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+// ═══════════════════════════════════════════
+//  EXPORT CSV
+// ═══════════════════════════════════════════
+
 function csvEscape(cell) {
   const s = String(cell);
   return s.includes(',') || s.includes('"') || s.includes('\n') ? '"' + s.replace(/"/g, '""') + '"' : s;
@@ -1073,15 +1089,15 @@ function exportCSV() {
   const timeStr = now.toLocaleTimeString('zh-CN', {hour12: false});
 
   const allEntries = [
-    { id: 'A-main', num: 'ZB-01', name: '1# 220V鍙樺帇鍣ㄦ€昏〃', tr: 'T-01 (220V)' },
+    { id: 'A-main', num: 'ZB-01', name: '1# 220V变压器总表', tr: 'T-01 (220V)' },
     ...circuitsT1.map(c => ({ id: c.id, num: c.num, name: c.name, tr: 'T-01 (220V)' })),
-    { id: 'B-main', num: 'ZB-02', name: '2# 380V鍙樺帇鍣ㄦ€昏〃', tr: 'T-02 (380V)' },
+    { id: 'B-main', num: 'ZB-02', name: '2# 380V变压器总表', tr: 'T-02 (380V)' },
     ...circuitsT2.map(c => ({ id: c.id, num: c.num, name: c.name, tr: 'T-02 (380V)' })),
   ];
 
   const rows = [];
-  rows.push(['銆愪粖鏃ョ敤鐢甸噺姹囨€汇€?, '瀵煎嚭鏃堕棿锛? + dateStr + ' ' + timeStr]);
-  rows.push(['琛ㄨ缂栧彿', '绾胯矾鍚嶇О', '褰掑睘鍙樺帇鍣?, 'IA鏈€澶у€?A)', 'IB鏈€澶у€?A)', 'IC鏈€澶у€?A)', 'IA鏈€灏忓€?A)', 'IB鏈€灏忓€?A)', 'IC鏈€灏忓€?A)', '浠婃棩鐢ㄧ數閲?kWh)']);
+  rows.push(['【今日用电量汇总】', '导出时间：' + dateStr + ' ' + timeStr]);
+  rows.push(['表计编号', '线路名称', '归属变压器', 'IA最大值(A)', 'IB最大值(A)', 'IC最大值(A)', 'IA最小值(A)', 'IB最小值(A)', 'IC最小值(A)', '今日用电量(kWh)']);
 
   allEntries.forEach(e => {
     const s = state[e.id];
@@ -1089,21 +1105,21 @@ function exportCSV() {
   });
 
   const totalDay = state['A-main'].dayKwh + state['B-main'].dayKwh;
-  rows.push(['鍚堣', '鍏ㄥ巶浠婃棩鐢ㄧ數', '', '', '', '', '', '', '', totalDay]);
+  rows.push(['合计', '全厂今日用电', '', '', '', '', '', '', '', totalDay]);
 
   rows.push(['']);
-  rows.push(['銆愭湰鏈堟瘡鏃ョ敤鐢甸噺鏄庣粏(kWh)銆?]);
-  const headerRow = ['鏃ユ湡', ...allEntries.map(e => `${e.num} ${e.name}`)];
+  rows.push(['【本月每日用电量明细(kWh)】']);
+  const headerRow = ['日期', ...allEntries.map(e => `${e.num} ${e.name}`)];
   rows.push(headerRow);
 
   const dayCount = state['A-main'].dailyData.length;
   for (let d = 0; d < dayCount; d++) {
-    const row = [`${d + 1}鏃];
+    const row = [`${d + 1}日`];
     allEntries.forEach(e => { row.push(state[e.id].dailyData[d] ?? ''); });
     rows.push(row);
   }
 
-  const monthTotalRow = ['鏈堝悎璁?];
+  const monthTotalRow = ['月合计'];
   allEntries.forEach(e => { monthTotalRow.push(state[e.id].monthKwh); });
   rows.push(monthTotalRow);
 
@@ -1112,7 +1128,7 @@ function exportCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `鏃烘椇鏉窞鎬诲巶_鐢ㄧ數鎶ヨ〃_${dateStr}.csv`;
+  a.download = `旺旺杭州总厂_用电报表_${dateStr}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1120,7 +1136,7 @@ function exportCSV() {
 
   const btn = document.getElementById('export-btn');
   const orig = btn.innerHTML;
-  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>瀵煎嚭鎴愬姛`;
+  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>导出成功`;
   btn.classList.add('done');
   btn.style.color = 'var(--accent-green)';
   btn.style.borderColor = 'rgba(0,230,118,0.5)';
@@ -1132,8 +1148,10 @@ function exportCSV() {
   }, 2000);
 }
 
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  BOOTSTRAP
-// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+// ═══════════════════════════════════════════
+//  BOOTSTRAP
+// ═══════════════════════════════════════════
+
 renderCircuits();
 updateData();
 updateClock();
