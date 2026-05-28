@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鏅烘収鐢ㄧ數鐩戞帶骞冲彴 路 鏃烘椇闆嗗洟鏉窞鎬诲巶</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deep: #060d1a;
+    --bg-card: #0d1e35;
+    --bg-card2: #0a1829;
+    --border: #1a3a5c;
+    --border-glow: #1e6fb4;
+    --text-primary: #e8f4ff;
+    --text-secondary: #7ab3d8;
+    --text-muted: #4a7a9e;
+    --accent-blue: #00aaff;
+    --accent-cyan: #00e5ff;
+    --accent-green: #00e676;
+    --accent-yellow: #ffd740;
+    --accent-red: #ff5252;
+    --accent-orange: #ff9100;
+    --accent-purple: #a855f7;
+    --glow-blue: rgba(0, 170, 255, 0.15);
+    --glow-cyan: rgba(0, 229, 255, 0.1);
+    --glow-purple: rgba(168, 85, 247, 0.1);
+  }
+
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 鈹€鈹€鈹€ HEADER 鈹€鈹€鈹€ */
+  .header {
+    background: linear-gradient(180deg, #071120 0%, var(--bg-deep) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #0066cc, #00aaff);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 0 16px rgba(0, 170, 255, 0.4);
+  }
+  .header-title {
+    font-size: 18px; font-weight: 700; letter-spacing: 2px;
+    background: linear-gradient(90deg, #e8f4ff, #00aaff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; letter-spacing: 1px; }
+  .header-right { display: flex; align-items: center; gap: 20px; }
+  .status-dot {
+    width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent-green); animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--accent-green); }
+    50% { opacity: 0.5; box-shadow: 0 0 16px var(--accent-green); }
+  }
+  .header-time { font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .header-status {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--accent-green);
+    background: rgba(0, 230, 118, 0.08); border: 1px solid rgba(0, 230, 118, 0.2);
+    padding: 4px 10px; border-radius: 20px;
+  }
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; color: var(--accent-green); letter-spacing: 0.5px;
+  }
+  .live-dot {
+    width: 6px; height: 6px; background: var(--accent-green); border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  /* 鈹€鈹€鈹€ ARCHITECTURE BAR 鈹€鈹€鈹€ */
+  .arch-bar {
+    background: linear-gradient(90deg, rgba(255,77,90,0.08) 0%, rgba(168,85,247,0.06) 50%, rgba(59,130,246,0.08) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px;
+    display: flex; align-items: center; gap: 16px;
+    font-size: 12px; color: var(--text-secondary);
+    position: sticky; top: 64px; z-index: 99;
+    backdrop-filter: blur(6px);
+  }
+  .arch-badge {
+    padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 11px; letter-spacing: 0.5px;
+  }
+  .arch-badge.red { background: rgba(255,77,90,0.15); color: var(--accent-red); border: 1px solid rgba(255,77,90,0.3); }
+  .arch-badge.purple { background: rgba(168,85,247,0.15); color: var(--accent-purple); border: 1px solid rgba(168,85,247,0.3); }
+  .arch-badge.blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); border: 1px solid rgba(59,130,246,0.3); }
+  .arch-sep { color: var(--text-muted); }
+  .arch-arrow { color: var(--text-muted); margin: 0 4px; }
+
+  /* 鈹€鈹€鈹€ OVERVIEW STRIP 鈹€鈹€鈹€ */
+  .overview-strip {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
+    background: var(--border); border-bottom: 1px solid var(--border);
+  }
+  .overview-item {
+    background: var(--bg-card2); padding: 14px 20px; text-align: center; transition: background 0.2s;
+  }
+  .overview-item:hover { background: #0e2040; }
+  .overview-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 4px; }
+  .overview-value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .overview-unit { font-size: 11px; color: var(--text-secondary); margin-left: 4px; font-weight: 400; }
+
+  /* 鈹€鈹€鈹€ MAIN LAYOUT 鈹€鈹€鈹€ */
+  .main {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px;
+  }
+
+  /* 鈹€鈹€鈹€ TRANSFORMER BLOCK 鈹€鈹€鈹€ */
+  .transformer-block {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .transformer-block.t1 { border-top: 2px solid var(--accent-purple); }
+  .transformer-block.t2 { border-top: 2px solid var(--accent-blue); }
+  .transformer-header {
+    background: linear-gradient(90deg, rgba(0, 102, 204, 0.25) 0%, rgba(0, 170, 255, 0.08) 100%);
+    border-bottom: 1px solid var(--border); padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .transformer-title { display: flex; align-items: center; gap: 10px; }
+  .transformer-badge {
+    color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    padding: 3px 8px; border-radius: 4px;
+  }
+  .transformer-badge.t1 { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+  .transformer-badge.t2 { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+  .transformer-name { font-size: 15px; font-weight: 600; }
+  .transformer-tag {
+    font-size: 11px; color: var(--text-muted); background: rgba(255,255,255,0.04);
+    padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border);
+  }
+
+  /* 鈹€鈹€鈹€ MAIN METER 鈹€鈹€鈹€ */
+  .main-meter {
+    margin: 14px;
+    background: linear-gradient(135deg, #071825 0%, #0a2035 100%);
+    border: 1px solid var(--border-glow); border-radius: 10px; padding: 14px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 0 20px var(--glow-blue);
+  }
+  .main-meter::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+  }
+  .meter-label { font-size: 11px; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 10px; font-weight: 600; }
+  .meter-main-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+  .meter-phase-block {
+    background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;
+    padding: 8px 4px; cursor: pointer; transition: border-color 0.2s, background 0.2s; text-align: center;
+  }
+  .meter-phase-block:hover { border-color: var(--accent-blue); background: rgba(0, 170, 255, 0.08); }
+  .meter-phase-header { font-size: 11px; font-weight: 700; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 4px; }
+  .meter-phase-live { display: flex; align-items: baseline; justify-content: center; gap: 2px; margin-bottom: 5px; }
+  .meter-phase-live-val { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+  .meter-phase-live-unit { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
+  .meter-phase-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 8px; }
+  .meter-phase-extremes { display: flex; justify-content: center; gap: 12px; }
+  .meter-phase-ex-item { text-align: center; line-height: 1.2; }
+  .meter-phase-ex-label { font-size: 8px; color: var(--text-muted); }
+  .meter-phase-ex-val { font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .meter-info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .meter-info-item {
+    text-align: center; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 7px 4px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .meter-info-label { font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
+  .meter-info-val { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+  .meter-info-unit { font-size: 9px; color: var(--text-secondary); margin-top: 1px; }
+  .meter-energy-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .meter-energy-item {
+    background: rgba(0,0,0,0.2); border-radius: 6px; padding: 7px 6px;
+    border: 1px solid rgba(255,255,255,0.04); text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .meter-energy-item.clickable { cursor: pointer; }
+  .meter-energy-item.clickable:hover { border-color: var(--accent-blue); background: rgba(0, 170, 255, 0.08); }
+  .meter-energy-item.clickable::after { content: ' 鈫?; font-size: 9px; color: var(--accent-blue); }
+  .meter-energy-label { font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
+  .meter-energy-value { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .meter-energy-unit { font-size: 9px; color: var(--text-muted); margin-top: 1px; }
+
+  /* 鈹€鈹€鈹€ CIRCUITS AREA 鈹€鈹€鈹€ */
+  .circuits-area { padding: 0 14px 14px; }
+  .circuits-header {
+    font-size: 11px; color: var(--text-muted); letter-spacing: 2px;
+    margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .circuits-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+
+  /* 鈹€鈹€鈹€ CIRCUIT CARD 鈹€鈹€鈹€ */
+  .circuit-card {
+    background: rgba(0,0,0,0.25); border: 1px solid rgba(26, 58, 92, 0.8);
+    border-radius: 8px; padding: 10px 8px; transition: all 0.25s;
+    cursor: default; position: relative; overflow: hidden;
+  }
+  .circuit-card:hover {
+    border-color: var(--accent-blue); background: rgba(0, 102, 204, 0.08);
+    transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0, 170, 255, 0.15);
+  }
+  .circuit-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    border-radius: 8px 8px 0 0;
+  }
+  .circuit-card.status-normal::before { background: var(--accent-green); }
+  .circuit-card.status-warn::before { background: var(--accent-yellow); }
+  .circuit-card.status-alert::before { background: var(--accent-red); }
+
+  .circuit-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px; gap: 4px;
+  }
+  .circuit-id-tag {
+    font-size: 9px; color: var(--text-muted); font-family: 'SF Mono','Consolas',monospace;
+    background: rgba(255,255,255,0.04); padding: 1px 5px; border-radius: 3px;
+    white-space: nowrap;
+  }
+  .circuit-name {
+    font-size: 10px; color: var(--text-secondary); font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .circuit-phases-row { display: flex; gap: 4px; margin-bottom: 4px; }
+  .circuit-phase-block {
+    flex: 1; text-align: center; background: rgba(0,0,0,0.25); border-radius: 5px;
+    padding: 4px 2px 5px; cursor: pointer; transition: background 0.2s, border-color 0.2s;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .circuit-phase-block:hover { background: rgba(0, 170, 255, 0.1); border-color: var(--accent-blue); }
+  .circuit-phase-label { font-size: 9px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 2px; line-height: 1; }
+  .circuit-phase-live { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .circuit-phase-live-unit { font-size: 8px; color: var(--text-secondary); font-weight: 400; }
+  .circuit-phase-ex-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 3px 4px; }
+  .circuit-phase-ex-row { display: flex; justify-content: center; gap: 6px; }
+  .circuit-phase-ex-sub { text-align: center; line-height: 1.15; }
+  .circuit-phase-ex-sub-label { font-size: 6px; color: var(--text-muted); }
+  .circuit-phase-ex-sub-val { font-size: 8px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .circuit-power { font-size: 11px; color: var(--accent-cyan); margin: 3px 0 4px; font-weight: 600; text-align: center; }
+  .circuit-energy-row { display: flex; gap: 4px; }
+  .circuit-energy-item {
+    flex: 1; background: rgba(0,0,0,0.2); border-radius: 3px; padding: 3px 4px;
+    text-align: center; cursor: pointer; transition: background 0.2s;
+  }
+  .circuit-energy-item:hover { background: rgba(0, 170, 255, 0.12); }
+  .circuit-energy-label { font-size: 8px; color: var(--text-muted); line-height: 1; }
+  .circuit-energy-val { font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+
+  /* 鈹€鈹€鈹€ STATUS INDICATOR 鈹€鈹€鈹€ */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 500; margin-bottom: 6px;
+  }
+  .status-badge.normal { color: var(--accent-green); background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.25); }
+  .status-badge.warn { color: var(--accent-yellow); background: rgba(255, 215, 64, 0.1); border: 1px solid rgba(255, 215, 64, 0.25); }
+  .status-badge.alert { color: var(--accent-red); background: rgba(255, 82, 82, 0.1); border: 1px solid rgba(255, 82, 82, 0.25); }
+  .status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+  /* 鈹€鈹€鈹€ MODAL 鈹€鈹€鈹€ */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    z-index: 1000; backdrop-filter: blur(4px); align-items: center; justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 14px;
+    width: 640px; max-width: 95vw; max-height: 90vh; overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.8), 0 0 40px rgba(0, 170, 255, 0.1);
+    animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .modal-header {
+    background: linear-gradient(90deg, rgba(0, 102, 204, 0.2), transparent);
+    border-bottom: 1px solid var(--border); padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-size: 15px; font-weight: 600; }
+  .modal-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .modal-close {
+    width: 28px; height: 28px; background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border); border-radius: 6px; color: var(--text-secondary);
+    cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,82,82,0.15); color: var(--accent-red); border-color: var(--accent-red); }
+  .modal-body { padding: 20px; overflow-y: auto; max-height: calc(90vh - 70px); }
+  .modal-stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+  .modal-stat {
+    background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; text-align: center;
+  }
+  .modal-stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+  .modal-stat-val { font-size: 20px; font-weight: 700; }
+  .modal-stat-unit { font-size: 11px; color: var(--text-secondary); }
+  .chart-container {
+    position: relative; height: 260px; background: rgba(0,0,0,0.2);
+    border-radius: 8px; padding: 12px; border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  /* 鈹€鈹€鈹€ SCROLLBAR 鈹€鈹€鈹€ */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1a3a5c; border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2a5a8c; }
+
+  /* Shimmer */
+  @keyframes shimmer { 0% { opacity: 1; } 25% { opacity: 0.4; } 50% { opacity: 1; } }
+  .updating { animation: shimmer 0.6s ease; }
+
+  /* 鈹€鈹€鈹€ EXPORT BUTTON 鈹€鈹€鈹€ */
+  .export-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, rgba(0,170,255,0.12), rgba(0,229,255,0.06));
+    border: 1px solid rgba(0,170,255,0.4); border-radius: 6px;
+    color: var(--accent-cyan); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .export-btn:hover {
+    background: linear-gradient(135deg, rgba(0,170,255,0.22), rgba(0,229,255,0.12));
+    border-color: var(--accent-cyan); box-shadow: 0 0 12px rgba(0,229,255,0.2);
+    transform: translateY(-1px);
+  }
+  .export-btn:active { transform: translateY(0); }
+  @keyframes exportFlash {
+    0% { box-shadow: 0 0 0 0 rgba(0,229,255,0.5); }
+    50% { box-shadow: 0 0 0 6px rgba(0,229,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,229,255,0); }
+  }
+  .export-btn.done { animation: exportFlash 0.5s ease; }
+
+  /* 鈹€鈹€鈹€ COLOR HELPERS 鈹€鈹€鈹€ */
+  .text-blue { color: var(--accent-blue); }
+  .text-cyan { color: var(--accent-cyan); }
+  .text-green { color: var(--accent-green); }
+  .text-yellow { color: var(--accent-yellow); }
+  .text-red { color: var(--accent-red); }
+  .text-orange { color: var(--accent-orange); }
+  .text-purple { color: var(--accent-purple); }
+  .text-muted { color: var(--text-muted); }
+
+  /* 鈹€鈹€鈹€ FOOTER 鈹€鈹€鈹€ */
+  .footer {
+    text-align: center; padding: 12px; font-size: 11px;
+    color: var(--text-muted); border-top: 1px solid var(--border); letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- 鈺愨晲鈺愨晲鈺愨晲 HEADER 鈺愨晲鈺愨晲鈺愨晲 -->
+<header class="header">
+  <div class="header-left">
+    <div class="header-icon">鈿?/div>
+    <div>
+      <div class="header-title">鏅?鎱?鐢?鐢?鐩?鎺?骞?鍙?/div>
+      <div class="header-subtitle">鏃烘椇闆嗗洟鏉窞鎬诲巶 路 閰嶇數鎴?#1</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-status">
+      <div class="status-dot"></div>
+      绯荤粺杩愯姝ｅ父
+    </div>
+    <div>
+      <div class="header-time" id="clock">--:--:--</div>
+      <div class="header-subtitle" style="text-align:right" id="datestr">----/--/--</div>
+    </div>
+    <div class="live-badge">
+      <span class="live-dot"></span> LIVE
+    </div>
+    <button class="export-btn" id="export-btn" onclick="exportCSV()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      瀵煎嚭浠婃棩鐢ㄧ數
+    </button>
+  </div>
+</header>
+
+<!-- 鈺愨晲鈺愨晲鈺愨晲 ARCHITECTURE BAR 鈺愨晲鈺愨晲鈺愨晲 -->
+<div class="arch-bar">
+  <span style="font-weight:600;color:var(--text-primary)">鐢靛姏鏋舵瀯</span>
+  <span class="arch-badge red">D01 鎸叴绾挎湁鍔熸€?/span>
+  <span class="arch-sep">10KV 路 脳1500</span>
+  <span class="arch-arrow">鈫?/span>
+  <span class="arch-badge purple">1# 220V鍙樺帇鍣?/span>
+  <span class="arch-sep">9鍥炶矾</span>
+  <span class="arch-arrow">鈫?/span>
+  <span class="arch-badge blue">2# 380V鍙樺帇鍣?/span>
+  <span class="arch-sep">12鍥炶矾</span>
+  <span style="margin-left:auto;font-size:11px;color:var(--text-muted)">涓€绾ч厤鐢佃〃 21涓?路 绾㈣壊灞傜骇</span>
+</div>
+
+<!-- 鈺愨晲鈺愨晲鈺愨晲 OVERVIEW STRIP 鈺愨晲鈺愨晲鈺愨晲 -->
+<div class="overview-strip">
+  <div class="overview-item">
+    <div class="overview-label">鎬诲疄鏃惰礋鑽?/div>
+    <div class="overview-value text-cyan" id="ov-load">鈥?/div>
+    <div style="font-size:11px;color:var(--text-muted)">kW</div>
+  </div>
+  <div class="overview-item">
+    <div class="overview-label">浠婃棩鎬荤敤鐢甸噺</div>
+    <div class="overview-value text-blue" id="ov-day">鈥?/div>
+    <div style="font-size:11px;color:var(--text-muted)">kWh</div>
+  </div>
+  <div class="overview-item">
+    <div class="overview-label">鏈湀鎬荤敤鐢甸噺</div>
+    <div class="overview-value text-green" id="ov-month">鈥?/div>
+    <div style="font-size:11px;color:var(--text-muted)">kWh</div>
+  </div>
+  <div class="overview-item">
+    <div class="overview-label">鍦ㄧ嚎鍥炶矾鏁?/div>
+    <div class="overview-value text-yellow">21<span class="overview-unit">/21</span></div>
+  </div>
+  <div class="overview-item">
+    <div class="overview-label">鍛婅鏁?/div>
+    <div class="overview-value text-red" id="ov-alert">0</div>
+    <div style="font-size:11px;color:var(--text-muted)">鏉℃椿璺冨憡璀?/div>
+  </div>
+</div>
+
+<!-- 鈺愨晲鈺愨晲鈺愨晲 MAIN CONTENT 鈺愨晲鈺愨晲鈺愨晲 -->
+<main class="main">
+
+  <!-- 鈹€鈹€ TRANSFORMER 1# 220V 鈹€鈹€ -->
+  <div class="transformer-block t1" id="block-1">
+    <div class="transformer-header">
+      <div class="transformer-title">
+        <span class="transformer-badge t1">T-01</span>
+        <span class="transformer-name">1# 220V鍙樺帇鍣?/span>
+        <span class="transformer-tag">涓嬫寕 9 鍥炶矾</span>
+      </div>
+      <div class="live-badge"><span class="live-dot"></span>瀹炴椂鏇存柊</div>
+    </div>
+    <!-- 鎬昏〃 ZB-01 -->
+    <div class="main-meter">
+      <div class="meter-label">鈻?鍙樺帇鍣ㄦ€昏〃 路 ZB-01</div>
+      <div class="meter-main-row">
+        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ia','ZB-01 路 IA鐩哥數娴佽秼鍔?)">
+          <div class="meter-phase-header">IA 鐩?/div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="A-main-ia">鈥?/span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="A-main-max-ia">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="A-main-min-ia">鈥?/div></div>
+          </div>
+        </div>
+        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ib','ZB-01 路 IB鐩哥數娴佽秼鍔?)">
+          <div class="meter-phase-header">IB 鐩?/div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="A-main-ib">鈥?/span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="A-main-max-ib">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="A-main-min-ib">鈥?/div></div>
+          </div>
+        </div>
+        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ic','ZB-01 路 IC鐩哥數娴佽秼鍔?)">
+          <div class="meter-phase-header">IC 鐩?/div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="A-main-ic">鈥?/span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="A-main-max-ic">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="A-main-min-ic">鈥?/div></div>
+          </div>
+        </div>
+      </div>
+      <div class="meter-info-row">
+        <div class="meter-info-item">
+          <div class="meter-info-label">褰撳墠鍔熺巼</div>
+          <div class="meter-info-val text-blue" id="A-main-power">鈥?/div>
+          <div class="meter-info-unit">kW</div>
+        </div>
+        <div class="meter-info-item">
+          <div class="meter-info-label">鍔熺巼鍥犳暟</div>
+          <div class="meter-info-val text-green" id="A-main-pf">鈥?/div>
+          <div class="meter-info-unit">cos 蠁</div>
+        </div>
+      </div>
+      <div class="meter-energy-row">
+        <div class="meter-energy-item">
+          <div class="meter-energy-label">浠婃棩鐢ㄧ數閲?/div>
+          <div class="meter-energy-value text-cyan" id="A-main-day">鈥?/div>
+          <div class="meter-energy-unit">kWh</div>
+        </div>
+        <div class="meter-energy-item clickable" onclick="openModal('A-main','ZB-01 路 1# 220V鍙樺帇鍣ㄦ€昏〃')">
+          <div class="meter-energy-label">鏈湀鐢ㄧ數閲?/div>
+          <div class="meter-energy-value text-green" id="A-main-month">鈥?/div>
+          <div class="meter-energy-unit">kWh</div>
+        </div>
+      </div>
+    </div>
+    <!-- 9鍥炶矾 -->
+    <div class="circuits-area">
+      <div class="circuits-header">鈻?涓€绾ч厤鐢佃〃锛圖01.1 ~ D01.9锛?/div>
+      <div class="circuits-grid" id="circuits-1"></div>
+    </div>
+  </div>
+
+  <!-- 鈹€鈹€ TRANSFORMER 2# 380V 鈹€鈹€ -->
+  <div class="transformer-block t2" id="block-2">
+    <div class="transformer-header">
+      <div class="transformer-title">
+        <span class="transformer-badge t2">T-02</span>
+        <span class="transformer-name">2# 380V鍙樺帇鍣?/span>
+        <span class="transformer-tag">涓嬫寕 12 鍥炶矾</span>
+      </div>
+      <div class="live-badge"><span class="live-dot"></span>瀹炴椂鏇存柊</div>
+    </div>
+    <!-- 鎬昏〃 ZB-02 -->
+    <div class="main-meter">
+      <div class="meter-label">鈻?鍙樺帇鍣ㄦ€昏〃 路 ZB-02</div>
+      <div class="meter-main-row">
+        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ia','ZB-02 路 IA鐩哥數娴佽秼鍔?)">
+          <div class="meter-phase-header">IA 鐩?/div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="B-main-ia">鈥?/span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="B-main-max-ia">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="B-main-min-ia">鈥?/div></div>
+          </div>
+        </div>
+        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ib','ZB-02 路 IB鐩哥數娴佽秼鍔?)">
+          <div class="meter-phase-header">IB 鐩?/div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="B-main-ib">鈥?/span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="B-main-max-ib">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="B-main-min-ib">鈥?/div></div>
+          </div>
+        </div>
+        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ic','ZB-02 路 IC鐩哥數娴佽秼鍔?)">
+          <div class="meter-phase-header">IC 鐩?/div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="B-main-ic">鈥?/span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€澶?/div><div class="meter-phase-ex-val text-orange" id="B-main-max-ic">鈥?/div></div>
+            <div class="meter-phase-ex-item"><div class="meter-phase-ex-label">鏈€灏?/div><div class="meter-phase-ex-val text-blue" id="B-main-min-ic">鈥?/div></div>
+          </div>
+        </div>
+      </div>
+      <div class="meter-info-row">
+        <div class="meter-info-item">
+          <div class="meter-info-label">褰撳墠鍔熺巼</div>
+          <div class="meter-info-val text-blue" id="B-main-power">鈥?/div>
+          <div class="meter-info-unit">kW</div>
+        </div>
+        <div class="meter-info-item">
+          <div class="meter-info-label">鍔熺巼鍥犳暟</div>
+          <div class="meter-info-val text-green" id="B-main-pf">鈥?/div>
+          <div class="meter-info-unit">cos 蠁</div>
+        </div>
+      </div>
+      <div class="meter-energy-row">
+        <div class="meter-energy-item">
+          <div class="meter-energy-label">浠婃棩鐢ㄧ數閲?/div>
+          <div class="meter-energy-value text-cyan" id="B-main-day">鈥?/div>
+          <div class="meter-energy-unit">kWh</div>
+        </div>
+        <div class="meter-energy-item clickable" onclick="openModal('B-main','ZB-02 路 2# 380V鍙樺帇鍣ㄦ€昏〃')">
+          <div class="meter-energy-label">鏈湀鐢ㄧ數閲?/div>
+          <div class="meter-energy-value text-green" id="B-main-month">鈥?/div>
+          <div class="meter-energy-unit">kWh</div>
+        </div>
+      </div>
+    </div>
+    <!-- 12鍥炶矾 -->
+    <div class="circuits-area">
+      <div class="circuits-header">鈻?涓€绾ч厤鐢佃〃锛圖01.10 ~ D01.21锛?/div>
+      <div class="circuits-grid" id="circuits-2"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">鏅烘収鐢ㄧ數鐩戞帶绯荤粺 路 鏁版嵁姣?5s 鑷姩鍒锋柊 路 浠呬緵鍐呴儴浣跨敤</footer>
+
+<!-- 鈺愨晲鈺愨晲鈺愨晲 MODAL 鈺愨晲鈺愨晲鈺愨晲 -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-title" id="modal-title">姣忔棩鐢ㄧ數閲忔槑缁?/div>
+        <div class="modal-subtitle" id="modal-subtitle">鈥?/div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">鉁?/button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-stat-row" id="modal-stats"></div>
+      <div class="chart-container">
+        <canvas id="modalChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  REAL ARCHITECTURE DATA
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+// 1# 220V 鍙樺帇鍣?鈥?9鍥炶矾
+const circuitsT1 = [
+  { id: 'A-01', num: 'D01.1',  name: 'MP5涓夊伐绋?,       ct: '400/5' },
+  { id: 'A-02', num: 'D01.2',  name: 'MP6涓夊伐绋?,       ct: '400/5' },
+  { id: 'A-03', num: 'D01.3',  name: 'MP8涓€宸ョ▼',       ct: '200/5' },
+  { id: 'A-04', num: 'D01.4',  name: 'MP9涓€宸ョ▼',       ct: '400/5' },
+  { id: 'A-05', num: 'D01.5',  name: 'MP10涓€宸ョ▼绯背绾?, ct: '400/5' },
+  { id: 'A-06', num: 'D01.6',  name: 'MP11浜屽伐绋?,       ct: '400/5' },
+  { id: 'A-07', num: 'D01.7',  name: 'MP1浜屽伐绋?,        ct: '400/5' },
+  { id: 'A-08', num: 'D01.8',  name: 'MP3浜屽伐绋?,        ct: '400/5' },
+  { id: 'A-09', num: 'D01.9',  name: 'MP4涓€宸ョ▼',        ct: '150/5' },
+];
+
+// 2# 380V 鍙樺帇鍣?鈥?12鍥炶矾
+const circuitsT2 = [
+  { id: 'B-01', num: 'D01.10', name: 'LP1绯背绾?,       ct: '300/5' },
+  { id: 'B-02', num: 'D01.11', name: 'LP-2涓夊伐绋?,       ct: '400/5' },
+  { id: 'B-03', num: 'D01.12', name: 'LP3(4)涓夊伐绋?,     ct: '400/5' },
+  { id: 'B-04', num: 'D01.13', name: 'LP15浜屽伐绋?,       ct: '400/5' },
+  { id: 'B-05', num: 'D01.14', name: 'LP6鍔炲叕瀹?,        ct: '150/5' },
+  { id: 'B-06', num: 'D01.15', name: 'LP3浜屽伐绋嬪柗绯?,    ct: '200/5' },
+  { id: 'B-07', num: 'D01.16', name: 'LP7瀹堝崼',          ct: '鈥? },
+  { id: 'B-08', num: 'D01.17', name: 'LP9鍌ㄨ繍',          ct: '鈥? },
+  { id: 'B-09', num: 'D01.18', name: 'LP10涓€宸ョ▼',       ct: '400/5' },
+  { id: 'B-10', num: 'D01.19', name: 'LP11閰嶇數鎴跨┖璋?,   ct: '鈥? },
+  { id: 'B-11', num: 'D01.20', name: 'LP8姹℃按',          ct: '400/5' },
+  { id: 'B-12', num: 'D01.21', name: '姹℃按浜?,           ct: '200/5' },
+];
+
+// Base current for each circuit (derived from CT ratio)
+function baseFromCT(ct) {
+  if (ct === '400/5') return { ia: 55, ib: 52, ic: 58, kwhScale: 1.0 };
+  if (ct === '300/5') return { ia: 45, ib: 42, ic: 48, kwhScale: 0.8 };
+  if (ct === '200/5') return { ia: 30, ib: 28, ic: 33, kwhScale: 0.6 };
+  if (ct === '150/5') return { ia: 22, ib: 20, ic: 25, kwhScale: 0.4 };
+  return { ia: 15, ib: 13, ic: 18, kwhScale: 0.3 };
+}
+
+const circuitIdsA = circuitsT1.map(c => c.id);
+const circuitIdsB = circuitsT2.map(c => c.id);
+const circuitBaseA = circuitsT1.map(c => baseFromCT(c.ct));
+const circuitBaseB = circuitsT2.map(c => baseFromCT(c.ct));
+
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  STATE
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?const state = {};
+
+function genDailyArr(base, variance, sinus = true) {
+  const days = [];
+  for (let i = 1; i <= 28; i++) {
+    let v = base + randF(-variance, variance);
+    if (sinus) v += Math.sin(i * 0.45) * variance * 0.4;
+    days.push(+v.toFixed(1));
+  }
+  return days;
+}
+
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randF(min, max, dec = 1) { return +(Math.random() * (max - min) + min).toFixed(dec); }
+
+function initCircuit(id, base) {
+  const s = {
+    maxI: { ia: base.ia + rand(15, 40), ib: base.ib + rand(12, 38), ic: base.ic + rand(16, 42) },
+    minI: { ia: Math.max(3, base.ia * 0.15), ib: Math.max(3, base.ib * 0.15), ic: Math.max(3, base.ic * 0.15) },
+    kwhBase: base.kwhScale,
+    dayKwh: 0, monthKwh: 0,
+    dailyData: [],
+    dailyPhaseData: { ia: [], ib: [], ic: [] },
+    liveIa: 0, liveIb: 0, liveIc: 0,
+  };
+  const dayBase = rand(80, 250) * base.kwhScale;
+  s.dailyData = genDailyArr(dayBase, dayBase * 0.25);
+  s.monthKwh = +s.dailyData.reduce((a, b) => a + b, 0).toFixed(0);
+  s.dayKwh = +s.dailyData[s.dailyData.length - 1].toFixed(1);
+  ['ia','ib','ic'].forEach(ph => {
+    s.dailyPhaseData[ph] = genDailyArr(base[ph], base[ph] * 0.25);
+  });
+  state[id] = s;
+}
+
+function initMain(mainId, circuitIds) {
+  const sum = (fn) => circuitIds.reduce((a, id) => a + fn(state[id]), 0);
+  const dailySum = [];
+  for (let i = 0; i < 28; i++) {
+    dailySum.push(+circuitIds.reduce((a, id) => a + state[id].dailyData[i], 0).toFixed(1));
+  }
+  const phaseDailySum = {};
+  ['ia','ib','ic'].forEach(ph => {
+    phaseDailySum[ph] = [];
+    for (let i = 0; i < 28; i++) {
+      phaseDailySum[ph].push(+circuitIds.reduce((a, id) => a + state[id].dailyPhaseData[ph][i], 0).toFixed(1));
+    }
+  });
+  state[mainId] = {
+    maxI: { ia: sum(s => s.maxI.ia), ib: sum(s => s.maxI.ib), ic: sum(s => s.maxI.ic) },
+    minI: { ia: sum(s => s.minI.ia), ib: sum(s => s.minI.ib), ic: sum(s => s.minI.ic) },
+    dayKwh: +dailySum[dailySum.length - 1].toFixed(1),
+    monthKwh: +dailySum.reduce((a, b) => a + b, 0).toFixed(0),
+    dailyData: dailySum,
+    dailyPhaseData: phaseDailySum,
+  };
+}
+
+// Init all
+circuitBaseA.forEach((b, i) => initCircuit(circuitIdsA[i], b));
+circuitBaseB.forEach((b, i) => initCircuit(circuitIdsB[i], b));
+initMain('A-main', circuitIdsA);
+initMain('B-main', circuitIdsB);
+
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  RENDER CIRCUITS
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+function renderCircuits() {
+  function makeCard(c, idx, total) {
+    const id = c.id;
+    const s = state[id];
+    const statuses = ['normal','normal','normal','normal','warn','alert'];
+    const sClass = statuses[Math.floor(Math.random() * 4)];
+
+    return `
+    <div class="circuit-card status-${sClass}" id="card-${id}">
+      <div class="circuit-card-header">
+        <span class="circuit-id-tag">${c.num}</span>
+        <span class="status-badge ${sClass}">${sClass==='normal'?'姝ｅ父':sClass==='warn'?'棰勮':'鍛婅'}</span>
+      </div>
+      <div class="circuit-name" title="${c.name}">${c.name}</div>
+      <div class="circuit-phases-row">
+        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ia','${c.num} ${c.name} 路 IA鐩哥數娴佽秼鍔?)">
+          <div class="circuit-phase-label">IA</div>
+          <div class="circuit-phase-live text-cyan" id="${id}-ia">鈥?span class="circuit-phase-live-unit">A</span></div>
+          <div class="circuit-phase-ex-divider"></div>
+          <div class="circuit-phase-ex-row">
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€澶?/div><div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ia">${s.maxI.ia}</div></div>
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€灏?/div><div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ia">${s.minI.ia}</div></div>
+          </div>
+        </div>
+        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ib','${c.num} ${c.name} 路 IB鐩哥數娴佽秼鍔?)">
+          <div class="circuit-phase-label">IB</div>
+          <div class="circuit-phase-live text-cyan" id="${id}-ib">鈥?span class="circuit-phase-live-unit">A</span></div>
+          <div class="circuit-phase-ex-divider"></div>
+          <div class="circuit-phase-ex-row">
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€澶?/div><div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ib">${s.maxI.ib}</div></div>
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€灏?/div><div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ib">${s.minI.ib}</div></div>
+          </div>
+        </div>
+        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ic','${c.num} ${c.name} 路 IC鐩哥數娴佽秼鍔?)">
+          <div class="circuit-phase-label">IC</div>
+          <div class="circuit-phase-live text-cyan" id="${id}-ic">鈥?span class="circuit-phase-live-unit">A</span></div>
+          <div class="circuit-phase-ex-divider"></div>
+          <div class="circuit-phase-ex-row">
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€澶?/div><div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ic">${s.maxI.ic}</div></div>
+            <div class="circuit-phase-ex-sub"><div class="circuit-phase-ex-sub-label">鏈€灏?/div><div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ic">${s.minI.ic}</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="circuit-power" id="${id}-power">鈥?kW</div>
+      <div class="circuit-energy-row">
+        <div class="circuit-energy-item">
+          <div class="circuit-energy-label">鏃ョ敤鐢?kWh</div>
+          <div class="circuit-energy-val text-cyan" id="${id}-day">${s.dayKwh}</div>
+        </div>
+        <div class="circuit-energy-item" onclick="openModal('${id}','${c.num} ${c.name}')">
+          <div class="circuit-energy-label">鏈堢敤鐢?kWh 鈫?/div>
+          <div class="circuit-energy-val text-green" id="${id}-month">${s.monthKwh}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('circuits-1').innerHTML = circuitsT1.map(c => makeCard(c)).join('');
+  document.getElementById('circuits-2').innerHTML = circuitsT2.map(c => makeCard(c)).join('');
+}
+
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  LIVE DATA UPDATE
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Sanitize floating point noise
+  if (typeof val === 'number') {
+    val = id.includes('-pf') ? +val.toFixed(2) : +val.toFixed(1);
+  }
+  if (typeof val === 'string' && val.includes('<')) {
+    el.innerHTML = val;
+  } else {
+    el.textContent = val;
+  }
+  el.classList.add('updating');
+  setTimeout(() => el.classList.remove('updating'), 600);
+}
+
+function updateData() {
+  const allIds = [...circuitIdsA, ...circuitIdsB];
+  const allBases = [...circuitBaseA, ...circuitBaseB];
+  const sums = { A: { ia:0, ib:0, ic:0, pow:0 }, B: { ia:0, ib:0, ic:0, pow:0 } };
+
+  allIds.forEach((id, idx) => {
+    const base = allBases[idx];
+    const cIa = +randF(base.ia * 0.8, base.ia * 1.2);
+    const cIb = +randF(base.ib * 0.8, base.ib * 1.2);
+    const cIc = +randF(base.ic * 0.8, base.ic * 1.2);
+    const avgC = (cIa + cIb + cIc) / 3;
+    const pf = randF(0.85, 0.96, 2);
+    const pow = +(avgC * 0.38 * pf * Math.sqrt(3)).toFixed(1);
+    const s = state[id];
+    s.liveIa = cIa; s.liveIb = cIb; s.liveIc = cIc;
+
+    ['ia','ib','ic'].forEach(ph => {
+      const val = ph === 'ia' ? cIa : ph === 'ib' ? cIb : cIc;
+      if (val > s.maxI[ph]) s.maxI[ph] = +val.toFixed(1);
+      if (val < s.minI[ph]) s.minI[ph] = +val.toFixed(1);
+    });
+
+    setVal(`${id}-ia`, cIa + '<span class="circuit-phase-live-unit">A</span>');
+    setVal(`${id}-ib`, cIb + '<span class="circuit-phase-live-unit">A</span>');
+    setVal(`${id}-ic`, cIc + '<span class="circuit-phase-live-unit">A</span>');
+    setVal(`${id}-power`, pow + ' kW');
+    ['max-ia','max-ib','max-ic','min-ia','min-ib','min-ic'].forEach(key => {
+      const [type, ph] = key.split('-');
+      const el = document.getElementById(`${id}-${key}`);
+      if (el) el.textContent = s[type === 'max' ? 'maxI' : 'minI'][ph];
+    });
+
+    const group = id.startsWith('A-') ? 'A' : 'B';
+    sums[group].ia += cIa;
+    sums[group].ib += cIb;
+    sums[group].ic += cIc;
+    sums[group].pow += pow;
+  });
+
+  function updateMain(id, group) {
+    const s = state[id];
+    const sum = sums[group];
+    const aIa = +sum.ia.toFixed(1);
+    const aIb = +sum.ib.toFixed(1);
+    const aIc = +sum.ic.toFixed(1);
+    const aPow = +(sum.pow * 1.02).toFixed(1);
+    const aAvgCur = (aIa + aIb + aIc) / 3;
+    const aPf = +Math.min(aPow / (aAvgCur * 0.38 * Math.sqrt(3)), 0.99).toFixed(2);
+
+    setVal(`${id}-ia`, aIa);
+    setVal(`${id}-ib`, aIb);
+    setVal(`${id}-ic`, aIc);
+    setVal(`${id}-power`, aPow);
+    setVal(`${id}-pf`, Math.min(aPf, 0.99));
+
+    ['ia','ib','ic'].forEach(ph => {
+      const val = ph === 'ia' ? aIa : ph === 'ib' ? aIb : aIc;
+      if (val > s.maxI[ph]) s.maxI[ph] = +val.toFixed(1);
+      if (val < s.minI[ph]) s.minI[ph] = +val.toFixed(1);
+      setVal(`${id}-max-${ph}`, s.maxI[ph]);
+      setVal(`${id}-min-${ph}`, s.minI[ph]);
+    });
+    setVal(`${id}-day`, s.dayKwh);
+    setVal(`${id}-month`, s.monthKwh);
+    return aPow;
+  }
+
+  const aPow = updateMain('A-main', 'A');
+  const bPow = updateMain('B-main', 'B');
+
+  const totalPow = aPow + bPow;
+  const totalDay = state['A-main'].dayKwh + state['B-main'].dayKwh;
+  const totalMonth = state['A-main'].monthKwh + state['B-main'].monthKwh;
+  setVal('ov-load', totalPow.toFixed(0));
+  setVal('ov-day', totalDay.toFixed(0));
+  setVal('ov-month', totalMonth.toFixed(0));
+}
+
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  CLOCK
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('zh-CN', {hour12: false});
+  document.getElementById('datestr').textContent = now.toLocaleDateString('zh-CN', {year:'numeric',month:'2-digit',day:'2-digit'});
+}
+
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  MODAL (kWh bar chart)
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+let chartInstance = null;
+
+function openModal(id, label) {
+  const s = state[id];
+  if (!s) return;
+
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+  document.getElementById('modal-title').textContent = '姣忔棩鐢ㄧ數閲忔槑缁?路 ' + label;
+  document.getElementById('modal-subtitle').textContent = `鏈湀宸茬粺璁?${s.dailyData.length} 澶?路 鍚堣 ${s.monthKwh} kWh`;
+
+  const maxD = Math.max(...s.dailyData);
+  const avgD = (s.dailyData.reduce((a,b)=>a+b,0)/s.dailyData.length).toFixed(1);
+  document.getElementById('modal-stats').innerHTML = `
+    <div class="modal-stat"><div class="modal-stat-label">鏈堢疮璁＄敤鐢?/div><div class="modal-stat-val text-green">${s.monthKwh}<span class="modal-stat-unit"> kWh</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">鏃ュ潎鐢ㄧ數</div><div class="modal-stat-val text-cyan">${avgD}<span class="modal-stat-unit"> kWh</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">鍗曟棩宄板€?/div><div class="modal-stat-val text-orange">${maxD}<span class="modal-stat-unit"> kWh</span></div></div>
+  `;
+
+  document.getElementById('modal-overlay').classList.add('active');
+
+  const ctx = document.getElementById('modalChart').getContext('2d');
+  const labels = s.dailyData.map((_, i) => `${i+1}鏃);
+  const avg = +avgD;
+
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: '鏃ョ敤鐢甸噺 (kWh)',
+          data: s.dailyData,
+          backgroundColor: s.dailyData.map(v => v > avg * 1.2 ? 'rgba(255,145,0,0.7)' : 'rgba(0,170,255,0.55)'),
+          borderColor: s.dailyData.map(v => v > avg * 1.2 ? '#ff9100' : '#00aaff'),
+          borderWidth: 1, borderRadius: 3,
+        },
+        {
+          label: '鏃ュ潎绾?,
+          data: new Array(s.dailyData.length).fill(avg),
+          type: 'line',
+          borderColor: 'rgba(0,229,255,0.7)', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#7ab3d8', font: { size: 11 } } },
+        tooltip: {
+          intersect: false, mode: 'index',
+          backgroundColor: '#0d1e35', borderColor: '#1a3a5c', borderWidth: 1,
+          titleColor: '#e8f4ff', bodyColor: '#7ab3d8',
+          padding: 8, caretSize: 6,
+          callbacks: {
+            label: ctx => ` ${(+ctx.parsed.y).toFixed(1)} kWh`
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#4a7a9e', font: { size: 9 }, maxRotation: 0 }, grid: { color: 'rgba(26,58,92,0.5)' } },
+        y: { ticks: { color: '#4a7a9e', font: { size: 10 } }, grid: { color: 'rgba(26,58,92,0.4)' } }
+      }
+    }
+  });
+}
+
+function closeModal(e) { if (e.target === document.getElementById('modal-overlay')) closeModalDirect(); }
+function closeModalDirect() {
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+  document.getElementById('modal-overlay').classList.remove('active');
+}
+
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  PHASE CURRENT TREND MODAL
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+function openPhaseModal(id, phase, label) {
+  const s = state[id];
+  if (!s || !s.dailyPhaseData) return;
+
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+  const phaseLabel = phase.toUpperCase();
+  const data = s.dailyPhaseData[phase];
+  const curMax = +s.maxI[phase].toFixed(1);
+  const curMin = +s.minI[phase].toFixed(1);
+  const avgVal = (data.reduce((a,b)=>a+b,0)/data.length).toFixed(1);
+
+  document.getElementById('modal-title').textContent = phaseLabel + '鐩哥數娴佹湀搴﹁秼鍔?路 ' + label;
+  document.getElementById('modal-subtitle').textContent = `鍘嗗彶鏋佸€?鈫?鏈€澶?${curMax}A / 鏈€灏?${curMin}A  路  鏈湀宸茬粺璁?${data.length} 澶ー;
+
+  document.getElementById('modal-stats').innerHTML = `
+    <div class="modal-stat"><div class="modal-stat-label">鍘嗗彶鏈€澶х數娴?/div><div class="modal-stat-val text-orange">${curMax}<span class="modal-stat-unit"> A</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">鏃ュ潎鐢垫祦</div><div class="modal-stat-val text-cyan">${avgVal}<span class="modal-stat-unit"> A</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">鍘嗗彶鏈€灏忕數娴?/div><div class="modal-stat-val text-blue">${curMin}<span class="modal-stat-unit"> A</span></div></div>
+  `;
+
+  document.getElementById('modal-overlay').classList.add('active');
+
+  const ctx = document.getElementById('modalChart').getContext('2d');
+  const labels = data.map((_, i) => `${i+1}鏃);
+  const avg = +avgVal;
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: `${phaseLabel}鐩告棩鐢垫祦 (A)`,
+          data: data,
+          borderColor: '#00e5ff', backgroundColor: 'rgba(0,229,255,0.08)',
+          borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#00e5ff',
+          pointBorderColor: '#0d1e35', pointBorderWidth: 1.5, tension: 0.35, fill: true,
+        },
+        {
+          label: '鏃ュ潎绾?,
+          data: new Array(data.length).fill(avg),
+          type: 'line', borderColor: 'rgba(255,215,64,0.7)',
+          borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#7ab3d8', font: { size: 11 } } },
+        tooltip: {
+          intersect: false, mode: 'index',
+          backgroundColor: '#0d1e35', borderColor: '#1a3a5c', borderWidth: 1,
+          titleColor: '#e8f4ff', bodyColor: '#7ab3d8',
+          padding: 8, caretSize: 6,
+          callbacks: {
+            label: ctx => ` ${(+ctx.parsed.y).toFixed(1)} A`
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#4a7a9e', font: { size: 9 }, maxRotation: 0 }, grid: { color: 'rgba(26,58,92,0.5)' } },
+        y: { ticks: { color: '#4a7a9e', font: { size: 10 } }, grid: { color: 'rgba(26,58,92,0.4)' } }
+      }
+    }
+  });
+}
+
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  EXPORT CSV
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+function csvEscape(cell) {
+  const s = String(cell);
+  return s.includes(',') || s.includes('"') || s.includes('\n') ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+function exportCSV() {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('zh-CN', {year:'numeric', month:'2-digit', day:'2-digit'}).replace(/\//g, '-');
+  const timeStr = now.toLocaleTimeString('zh-CN', {hour12: false});
+
+  const allEntries = [
+    { id: 'A-main', num: 'ZB-01', name: '1# 220V鍙樺帇鍣ㄦ€昏〃', tr: 'T-01 (220V)' },
+    ...circuitsT1.map(c => ({ id: c.id, num: c.num, name: c.name, tr: 'T-01 (220V)' })),
+    { id: 'B-main', num: 'ZB-02', name: '2# 380V鍙樺帇鍣ㄦ€昏〃', tr: 'T-02 (380V)' },
+    ...circuitsT2.map(c => ({ id: c.id, num: c.num, name: c.name, tr: 'T-02 (380V)' })),
+  ];
+
+  const rows = [];
+  rows.push(['銆愪粖鏃ョ敤鐢甸噺姹囨€汇€?, '瀵煎嚭鏃堕棿锛? + dateStr + ' ' + timeStr]);
+  rows.push(['琛ㄨ缂栧彿', '绾胯矾鍚嶇О', '褰掑睘鍙樺帇鍣?, 'IA鏈€澶у€?A)', 'IB鏈€澶у€?A)', 'IC鏈€澶у€?A)', 'IA鏈€灏忓€?A)', 'IB鏈€灏忓€?A)', 'IC鏈€灏忓€?A)', '浠婃棩鐢ㄧ數閲?kWh)']);
+
+  allEntries.forEach(e => {
+    const s = state[e.id];
+    rows.push([e.num, e.name, e.tr, s.maxI.ia, s.maxI.ib, s.maxI.ic, s.minI.ia, s.minI.ib, s.minI.ic, s.dayKwh]);
+  });
+
+  const totalDay = state['A-main'].dayKwh + state['B-main'].dayKwh;
+  rows.push(['鍚堣', '鍏ㄥ巶浠婃棩鐢ㄧ數', '', '', '', '', '', '', '', totalDay]);
+
+  rows.push(['']);
+  rows.push(['銆愭湰鏈堟瘡鏃ョ敤鐢甸噺鏄庣粏(kWh)銆?]);
+  const headerRow = ['鏃ユ湡', ...allEntries.map(e => `${e.num} ${e.name}`)];
+  rows.push(headerRow);
+
+  const dayCount = state['A-main'].dailyData.length;
+  for (let d = 0; d < dayCount; d++) {
+    const row = [`${d + 1}鏃];
+    allEntries.forEach(e => { row.push(state[e.id].dailyData[d] ?? ''); });
+    rows.push(row);
+  }
+
+  const monthTotalRow = ['鏈堝悎璁?];
+  allEntries.forEach(e => { monthTotalRow.push(state[e.id].monthKwh); });
+  rows.push(monthTotalRow);
+
+  const csvContent = '\uFEFF' + rows.map(row => row.map(csvEscape).join(',')).join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `鏃烘椇鏉窞鎬诲巶_鐢ㄧ數鎶ヨ〃_${dateStr}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  const btn = document.getElementById('export-btn');
+  const orig = btn.innerHTML;
+  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>瀵煎嚭鎴愬姛`;
+  btn.classList.add('done');
+  btn.style.color = 'var(--accent-green)';
+  btn.style.borderColor = 'rgba(0,230,118,0.5)';
+  setTimeout(() => {
+    btn.innerHTML = orig;
+    btn.classList.remove('done');
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }, 2000);
+}
+
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?//  BOOTSTRAP
+// 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+renderCircuits();
+updateData();
+updateClock();
+setInterval(updateData, 5000);
+setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
