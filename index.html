@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧用电监控平台 · 配电房总览</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deep: #060d1a;
+    --bg-card: #0d1e35;
+    --bg-card2: #0a1829;
+    --border: #1a3a5c;
+    --border-glow: #1e6fb4;
+    --text-primary: #e8f4ff;
+    --text-secondary: #7ab3d8;
+    --text-muted: #4a7a9e;
+    --accent-blue: #00aaff;
+    --accent-cyan: #00e5ff;
+    --accent-green: #00e676;
+    --accent-yellow: #ffd740;
+    --accent-red: #ff5252;
+    --accent-orange: #ff9100;
+    --glow-blue: rgba(0, 170, 255, 0.15);
+    --glow-cyan: rgba(0, 229, 255, 0.1);
+  }
+
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: linear-gradient(180deg, #071120 0%, var(--bg-deep) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #0066cc, #00aaff);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 0 16px rgba(0, 170, 255, 0.4);
+  }
+
+  .header-title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #e8f4ff, #00aaff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    letter-spacing: 1px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent-green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--accent-green); }
+    50% { opacity: 0.5; box-shadow: 0 0 16px var(--accent-green); }
+  }
+
+  .header-time {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--accent-green);
+    background: rgba(0, 230, 118, 0.08);
+    border: 1px solid rgba(0, 230, 118, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* ─── OVERVIEW STRIP ─── */
+  .overview-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .overview-item {
+    background: var(--bg-card2);
+    padding: 14px 20px;
+    text-align: center;
+    transition: background 0.2s;
+  }
+
+  .overview-item:hover { background: #0e2040; }
+
+  .overview-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .overview-value {
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .overview-unit {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-left: 4px;
+    font-weight: 400;
+  }
+
+  /* ─── MAIN LAYOUT ─── */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  /* ─── TRANSFORMER BLOCK ─── */
+  .transformer-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+
+  .transformer-header {
+    background: linear-gradient(90deg, rgba(0, 102, 204, 0.25) 0%, rgba(0, 170, 255, 0.08) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .transformer-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .transformer-badge {
+    background: linear-gradient(135deg, #0052a3, #0088cc);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .transformer-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .transformer-tag {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.04);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  /* ─── MAIN METER ─── */
+  .main-meter {
+    margin: 14px;
+    background: linear-gradient(135deg, #071825 0%, #0a2035 100%);
+    border: 1px solid var(--border-glow);
+    border-radius: 10px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 20px var(--glow-blue);
+  }
+
+  .main-meter::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+  }
+
+  .meter-label {
+    font-size: 11px;
+    color: var(--accent-cyan);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .meter-main-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  /* 合并块：实时电流 + 极值 */
+  .meter-phase-block {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 8px 4px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    text-align: center;
+  }
+
+  .meter-phase-block:hover {
+    border-color: var(--accent-blue);
+    background: rgba(0, 170, 255, 0.08);
+  }
+
+  .meter-phase-header {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .meter-phase-live {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 2px;
+    margin-bottom: 5px;
+  }
+
+  .meter-phase-live-val {
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .meter-phase-live-unit {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  .meter-phase-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 4px 8px;
+  }
+
+  .meter-phase-extremes {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .meter-phase-ex-item {
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .meter-phase-ex-label {
+    font-size: 8px;
+    color: var(--text-muted);
+  }
+
+  .meter-phase-ex-val {
+    font-size: 11px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 功率 + 功率因数 行 */
+  .meter-info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .meter-info-item {
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    padding: 7px 4px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .meter-info-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+
+  .meter-info-val {
+    font-size: 15px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .meter-info-unit {
+    font-size: 9px;
+    color: var(--text-secondary);
+    margin-top: 1px;
+  }
+
+  /* 日用电 + 月用电 行 */
+  .meter-energy-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .meter-energy-item {
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    padding: 7px 6px;
+    border: 1px solid rgba(255,255,255,0.04);
+    text-align: center;
+    cursor: default;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .meter-energy-item.clickable {
+    cursor: pointer;
+  }
+
+  .meter-energy-item.clickable:hover {
+    border-color: var(--accent-blue);
+    background: rgba(0, 170, 255, 0.08);
+  }
+
+  .meter-energy-item.clickable::after {
+    content: '↗';
+    font-size: 9px;
+    color: var(--accent-blue);
+    margin-left: 2px;
+  }
+
+  .meter-energy-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+
+  .meter-energy-value {
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .meter-energy-unit {
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  /* ─── CIRCUIT GRID ─── */
+  .circuits-area {
+    padding: 0 14px 14px;
+  }
+
+  .circuits-header {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .circuits-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  /* ─── CIRCUIT CARD ─── */
+  .circuit-card {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(26, 58, 92, 0.8);
+    border-radius: 8px;
+    padding: 10px 8px;
+    transition: all 0.25s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .circuit-card:hover {
+    border-color: var(--accent-blue);
+    background: rgba(0, 102, 204, 0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 170, 255, 0.15);
+  }
+
+  .circuit-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .circuit-card.status-normal::before { background: var(--accent-green); }
+  .circuit-card.status-warn::before { background: var(--accent-yellow); }
+  .circuit-card.status-alert::before { background: var(--accent-red); }
+
+  .circuit-name {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* 分表合并块：实时电流 + 极值 三列 */
+  .circuit-phases-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .circuit-phase-block {
+    flex: 1;
+    text-align: center;
+    background: rgba(0,0,0,0.25);
+    border-radius: 5px;
+    padding: 4px 2px 5px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .circuit-phase-block:hover {
+    background: rgba(0, 170, 255, 0.1);
+    border-color: var(--accent-blue);
+  }
+
+  .circuit-phase-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    line-height: 1;
+  }
+
+  .circuit-phase-live {
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  .circuit-phase-live-unit {
+    font-size: 8px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  .circuit-phase-ex-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+    margin: 3px 4px;
+  }
+
+  .circuit-phase-ex-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .circuit-phase-ex-sub {
+    text-align: center;
+    line-height: 1.15;
+  }
+
+  .circuit-phase-ex-sub-label {
+    font-size: 6px;
+    color: var(--text-muted);
+  }
+
+  .circuit-phase-ex-sub-val {
+    font-size: 8px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .circuit-power {
+    font-size: 11px;
+    color: var(--accent-cyan);
+    margin: 3px 0 4px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .circuit-energy-row {
+    display: flex;
+    gap: 4px;
+  }
+
+  .circuit-energy-item {
+    flex: 1;
+    background: rgba(0,0,0,0.2);
+    border-radius: 3px;
+    padding: 3px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .circuit-energy-item:hover {
+    background: rgba(0, 170, 255, 0.12);
+  }
+
+  .circuit-energy-label {
+    font-size: 8px;
+    color: var(--text-muted);
+    line-height: 1;
+  }
+
+  .circuit-energy-val {
+    font-size: 11px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+  }
+
+  /* ─── STATUS INDICATOR ─── */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .status-badge.normal {
+    color: var(--accent-green);
+    background: rgba(0, 230, 118, 0.1);
+    border: 1px solid rgba(0, 230, 118, 0.25);
+  }
+
+  .status-badge.warn {
+    color: var(--accent-yellow);
+    background: rgba(255, 215, 64, 0.1);
+    border: 1px solid rgba(255, 215, 64, 0.25);
+  }
+
+  .status-badge.alert {
+    color: var(--accent-red);
+    background: rgba(255, 82, 82, 0.1);
+    border: 1px solid rgba(255, 82, 82, 0.25);
+  }
+
+  .status-badge::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glow);
+    border-radius: 14px;
+    width: 640px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.8), 0 0 40px rgba(0, 170, 255, 0.1);
+    animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    background: linear-gradient(90deg, rgba(0, 102, 204, 0.2), transparent);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-title-group {}
+  .modal-title { font-size: 15px; font-weight: 600; }
+  .modal-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .modal-close {
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,82,82,0.15); color: var(--accent-red); border-color: var(--accent-red); }
+
+  .modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(90vh - 70px);
+  }
+
+  .modal-stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .modal-stat {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .modal-stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+  .modal-stat-val { font-size: 20px; font-weight: 700; }
+  .modal-stat-unit { font-size: 11px; color: var(--text-secondary); }
+
+  .chart-container {
+    position: relative;
+    height: 260px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1a3a5c; border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2a5a8c; }
+
+  /* ─── LIVE BADGE ─── */
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--accent-green);
+    letter-spacing: 0.5px;
+  }
+
+  .live-dot {
+    width: 6px; height: 6px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  /* ─── COLOR HELPERS ─── */
+  .text-blue { color: var(--accent-blue); }
+  .text-cyan { color: var(--accent-cyan); }
+  .text-green { color: var(--accent-green); }
+  .text-yellow { color: var(--accent-yellow); }
+  .text-red { color: var(--accent-red); }
+  .text-orange { color: var(--accent-orange); }
+  .text-muted { color: var(--text-muted); }
+
+  /* Shimmer update effect */
+  @keyframes shimmer {
+    0% { opacity: 1; }
+    25% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  .updating { animation: shimmer 0.6s ease; }
+
+  /* ─── EXPORT BUTTON ─── */
+  .export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, rgba(0,170,255,0.12), rgba(0,229,255,0.06));
+    border: 1px solid rgba(0,170,255,0.4);
+    border-radius: 6px;
+    color: var(--accent-cyan);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .export-btn:hover {
+    background: linear-gradient(135deg, rgba(0,170,255,0.22), rgba(0,229,255,0.12));
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 12px rgba(0,229,255,0.2);
+    transform: translateY(-1px);
+  }
+  .export-btn:active { transform: translateY(0); }
+  .export-btn svg { flex-shrink: 0; }
+
+  /* export flash feedback */
+  @keyframes exportFlash {
+    0%   { box-shadow: 0 0 0 0 rgba(0,229,255,0.5); }
+    50%  { box-shadow: 0 0 0 6px rgba(0,229,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,229,255,0); }
+  }
+  .export-btn.done { animation: exportFlash 0.5s ease; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center;
+    padding: 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header">
+  <div class="header-left">
+    <div class="header-icon">⚡</div>
+    <div>
+      <div class="header-title">智 慧 用 电 监 控 平 台</div>
+      <div class="header-subtitle">旺旺集团杭州总厂 · 配电房 #1</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-status">
+      <div class="status-dot"></div>
+      系统运行正常
+    </div>
+    <div>
+      <div class="header-time" id="clock">--:--:--</div>
+      <div class="header-subtitle" style="text-align:right" id="datestr">----/--/--</div>
+    </div>
+    <div class="live-badge">
+      <span class="live-dot"></span>
+      LIVE
+    </div>
+    <button class="export-btn" id="export-btn" onclick="exportCSV()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      导出今日用电
+    </button>
+  </div>
+</header>
+
+<!-- ══════ OVERVIEW STRIP ══════ -->
+<div class="overview-strip">
+  <div class="overview-item">
+    <div class="overview-label">总实时负荷</div>
+    <div class="overview-value text-cyan" id="ov-load">—</div>
+    <div style="font-size:11px;color:var(--text-muted)">kW</div>
+  </div>
+  <div class="overview-item">
+    <div class="overview-label">今日总用电量</div>
+    <div class="overview-value text-blue" id="ov-day">—</div>
+    <div style="font-size:11px;color:var(--text-muted)">kWh</div>
+  </div>
+  <div class="overview-item">
+    <div class="overview-label">本月总用电量</div>
+    <div class="overview-value text-green" id="ov-month">—</div>
+    <div style="font-size:11px;color:var(--text-muted)">kWh</div>
+  </div>
+  <div class="overview-item">
+    <div class="overview-label">在线回路数</div>
+    <div class="overview-value text-yellow">10<span class="overview-unit">/10</span></div>
+  </div>
+  <div class="overview-item">
+    <div class="overview-label">告警数</div>
+    <div class="overview-value text-red" id="ov-alert">0</div>
+    <div style="font-size:11px;color:var(--text-muted)">条活跃告警</div>
+  </div>
+</div>
+
+<!-- ══════ MAIN CONTENT ══════ -->
+<main class="main">
+
+  <!-- ── TRANSFORMER A ── -->
+  <div class="transformer-block" id="block-A">
+    <div class="transformer-header">
+      <div class="transformer-title">
+        <span class="transformer-badge">T-01</span>
+        <span class="transformer-name">1号变压器</span>
+        <span class="transformer-tag">容量 800 kVA</span>
+      </div>
+      <div class="live-badge"><span class="live-dot"></span>实时更新</div>
+    </div>
+
+    <!-- 总表 -->
+    <div class="main-meter">
+      <div class="meter-label">▌ 变压器总表 · ZB-01</div>
+      <!-- 三相电流+极值合并 -->
+      <div class="meter-main-row">
+        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ia','ZB-01 · IA相电流趋势')">
+          <div class="meter-phase-header">IA 相</div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="A-main-ia">—</span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最大</div>
+              <div class="meter-phase-ex-val text-orange" id="A-main-max-ia">—</div>
+            </div>
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最小</div>
+              <div class="meter-phase-ex-val text-blue" id="A-main-min-ia">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ib','ZB-01 · IB相电流趋势')">
+          <div class="meter-phase-header">IB 相</div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="A-main-ib">—</span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最大</div>
+              <div class="meter-phase-ex-val text-orange" id="A-main-max-ib">—</div>
+            </div>
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最小</div>
+              <div class="meter-phase-ex-val text-blue" id="A-main-min-ib">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="meter-phase-block" onclick="openPhaseModal('A-main','ic','ZB-01 · IC相电流趋势')">
+          <div class="meter-phase-header">IC 相</div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="A-main-ic">—</span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最大</div>
+              <div class="meter-phase-ex-val text-orange" id="A-main-max-ic">—</div>
+            </div>
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最小</div>
+              <div class="meter-phase-ex-val text-blue" id="A-main-min-ic">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 功率 + 功率因数 -->
+      <div class="meter-info-row">
+        <div class="meter-info-item">
+          <div class="meter-info-label">当前功率</div>
+          <div class="meter-info-val text-blue" id="A-main-power">—</div>
+          <div class="meter-info-unit">kW</div>
+        </div>
+        <div class="meter-info-item">
+          <div class="meter-info-label">功率因数</div>
+          <div class="meter-info-val text-green" id="A-main-pf">—</div>
+          <div class="meter-info-unit">cos φ</div>
+        </div>
+      </div>
+      <!-- 日用电 + 月用电 -->
+      <div class="meter-energy-row">
+        <div class="meter-energy-item">
+          <div class="meter-energy-label">今日用电量</div>
+          <div class="meter-energy-value text-cyan" id="A-main-day">—</div>
+          <div class="meter-energy-unit">kWh</div>
+        </div>
+        <div class="meter-energy-item clickable" onclick="openModal('A-main','ZB-01 · 1号变压器总表')">
+          <div class="meter-energy-label">本月用电量</div>
+          <div class="meter-energy-value text-green" id="A-main-month">—</div>
+          <div class="meter-energy-unit">kWh ↗</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5条线路 -->
+    <div class="circuits-area">
+      <div class="circuits-header">▌ 线路监控分表（L01 ~ L05）</div>
+      <div class="circuits-grid" id="circuits-A"></div>
+    </div>
+  </div>
+
+  <!-- ── TRANSFORMER B ── -->
+  <div class="transformer-block" id="block-B">
+    <div class="transformer-header">
+      <div class="transformer-title">
+        <span class="transformer-badge" style="background:linear-gradient(135deg,#005c8a,#0099cc)">T-02</span>
+        <span class="transformer-name">2号变压器</span>
+        <span class="transformer-tag">容量 1000 kVA</span>
+      </div>
+      <div class="live-badge"><span class="live-dot"></span>实时更新</div>
+    </div>
+
+    <div class="main-meter">
+      <div class="meter-label">▌ 变压器总表 · ZB-02</div>
+      <!-- 三相电流+极值合并 -->
+      <div class="meter-main-row">
+        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ia','ZB-02 · IA相电流趋势')">
+          <div class="meter-phase-header">IA 相</div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="B-main-ia">—</span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最大</div>
+              <div class="meter-phase-ex-val text-orange" id="B-main-max-ia">—</div>
+            </div>
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最小</div>
+              <div class="meter-phase-ex-val text-blue" id="B-main-min-ia">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ib','ZB-02 · IB相电流趋势')">
+          <div class="meter-phase-header">IB 相</div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="B-main-ib">—</span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最大</div>
+              <div class="meter-phase-ex-val text-orange" id="B-main-max-ib">—</div>
+            </div>
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最小</div>
+              <div class="meter-phase-ex-val text-blue" id="B-main-min-ib">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="meter-phase-block" onclick="openPhaseModal('B-main','ic','ZB-02 · IC相电流趋势')">
+          <div class="meter-phase-header">IC 相</div>
+          <div class="meter-phase-live">
+            <span class="meter-phase-live-val text-cyan" id="B-main-ic">—</span>
+            <span class="meter-phase-live-unit">A</span>
+          </div>
+          <div class="meter-phase-divider"></div>
+          <div class="meter-phase-extremes">
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最大</div>
+              <div class="meter-phase-ex-val text-orange" id="B-main-max-ic">—</div>
+            </div>
+            <div class="meter-phase-ex-item">
+              <div class="meter-phase-ex-label">最小</div>
+              <div class="meter-phase-ex-val text-blue" id="B-main-min-ic">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 功率 + 功率因数 -->
+      <div class="meter-info-row">
+        <div class="meter-info-item">
+          <div class="meter-info-label">当前功率</div>
+          <div class="meter-info-val text-blue" id="B-main-power">—</div>
+          <div class="meter-info-unit">kW</div>
+        </div>
+        <div class="meter-info-item">
+          <div class="meter-info-label">功率因数</div>
+          <div class="meter-info-val text-green" id="B-main-pf">—</div>
+          <div class="meter-info-unit">cos φ</div>
+        </div>
+      </div>
+      <!-- 日用电 + 月用电 -->
+      <div class="meter-energy-row">
+        <div class="meter-energy-item">
+          <div class="meter-energy-label">今日用电量</div>
+          <div class="meter-energy-value text-cyan" id="B-main-day">—</div>
+          <div class="meter-energy-unit">kWh</div>
+        </div>
+        <div class="meter-energy-item clickable" onclick="openModal('B-main','ZB-02 · 2号变压器总表')">
+          <div class="meter-energy-label">本月用电量</div>
+          <div class="meter-energy-value text-green" id="B-main-month">—</div>
+          <div class="meter-energy-unit">kWh ↗</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="circuits-area">
+      <div class="circuits-header">▌ 线路监控分表（L06 ~ L10）</div>
+      <div class="circuits-grid" id="circuits-B"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">智慧用电监控系统 · 数据每 5s 自动刷新 · 仅供内部使用</footer>
+
+<!-- ══════ MODAL ══════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-title" id="modal-title">每日用电量明细</div>
+        <div class="modal-subtitle" id="modal-subtitle">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-stat-row" id="modal-stats"></div>
+      <div class="chart-container">
+        <canvas id="modalChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA & STATE
+// ═══════════════════════════════════════════
+
+const circuitNamesA = ['空调动力', '生产线1', '照明回路', '仓储区', '办公楼'];
+const circuitNamesB = ['生产线2', '包装车间', '锅炉辅机', '消防应急', '充电桩'];
+const circuitIdsA   = ['A-L01','A-L02','A-L03','A-L04','A-L05'];
+const circuitIdsB   = ['B-L01','B-L02','B-L03','B-L04','B-L05'];
+const circuitNumsA  = ['L01','L02','L03','L04','L05'];
+const circuitNumsB  = ['L06','L07','L08','L09','L10'];
+
+// Historical extremes (persist across updates)
+const state = {};
+
+// Helper: generate 28 daily data points (used for kWh or per-phase current)
+function genDailyArr(base, variance, sinus = true) {
+  const days = [];
+  for (let i = 1; i <= 28; i++) {
+    let v = base + randF(-variance, variance);
+    if (sinus) v += Math.sin(i * 0.45) * variance * 0.4;
+    days.push(+v.toFixed(1));
+  }
+  return days;
+}
+
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randF(min, max, dec = 1) {
+  return +(Math.random() * (max - min) + min).toFixed(dec);
+}
+
+// ---------- INIT: circuits first, then derive mains ----------
+// Each circuit gets its own base current and kWh scale
+const circuitBaseA = [
+  { ia: 55, ib: 52, ic: 58, kwhScale: 1.0  },  // L01 空调动力
+  { ia: 70, ib: 66, ic: 73, kwhScale: 1.3  },  // L02 生产线1
+  { ia: 25, ib: 22, ic: 28, kwhScale: 0.5  },  // L03 照明回路
+  { ia: 35, ib: 32, ic: 38, kwhScale: 0.7  },  // L04 仓储区
+  { ia: 40, ib: 37, ic: 43, kwhScale: 0.8  },  // L05 办公楼
+];
+const circuitBaseB = [
+  { ia: 80, ib: 75, ic: 84, kwhScale: 1.5  },  // L06 生产线2
+  { ia: 45, ib: 42, ic: 48, kwhScale: 0.9  },  // L07 包装车间
+  { ia: 30, ib: 28, ic: 33, kwhScale: 0.6  },  // L08 锅炉辅机
+  { ia: 15, ib: 13, ic: 18, kwhScale: 0.3  },  // L09 消防应急
+  { ia: 50, ib: 47, ic: 54, kwhScale: 1.0  },  // L10 充电桩
+];
+
+// Init a single circuit
+function initCircuit(id, base) {
+  const s = {
+    maxI: { ia: base.ia + rand(15, 40), ib: base.ib + rand(12, 38), ic: base.ic + rand(16, 42) },
+    minI: { ia: Math.max(3, base.ia * 0.15), ib: Math.max(3, base.ib * 0.15), ic: Math.max(3, base.ic * 0.15) },
+    kwhBase: base.kwhScale,
+    dayKwh: 0, monthKwh: 0,
+    dailyData: [],
+    dailyPhaseData: { ia: [], ib: [], ic: [] },
+    // Raw per-phase live values (set during update)
+    liveIa: 0, liveIb: 0, liveIc: 0,
+  };
+  // Daily kWh: base daily ≈ 80~250 kWh * scale
+  const dayBase = rand(80, 250) * base.kwhScale;
+  s.dailyData = genDailyArr(dayBase, dayBase * 0.25);
+  s.monthKwh = +s.dailyData.reduce((a, b) => a + b, 0).toFixed(0);
+  s.dayKwh = +s.dailyData[s.dailyData.length - 1].toFixed(1);
+  // Phase daily
+  ['ia','ib','ic'].forEach(ph => {
+    s.dailyPhaseData[ph] = genDailyArr(base[ph], base[ph] * 0.25);
+  });
+  state[id] = s;
+}
+
+// Init a main meter (derived from its 5 circuits)
+function initMain(mainId, circuitIds) {
+  const sum = (fn) => circuitIds.reduce((a, id) => a + fn(state[id]), 0);
+  // Sum dailyData arrays element-wise
+  const dailySum = [];
+  for (let i = 0; i < 28; i++) {
+    dailySum.push(+circuitIds.reduce((a, id) => a + state[id].dailyData[i], 0).toFixed(1));
+  }
+  // Sum phase daily data
+  const phaseDailySum = {};
+  ['ia','ib','ic'].forEach(ph => {
+    phaseDailySum[ph] = [];
+    for (let i = 0; i < 28; i++) {
+      phaseDailySum[ph].push(+circuitIds.reduce((a, id) => a + state[id].dailyPhaseData[ph][i], 0).toFixed(1));
+    }
+  });
+  state[mainId] = {
+    maxI: {
+      ia: sum(s => s.maxI.ia),
+      ib: sum(s => s.maxI.ib),
+      ic: sum(s => s.maxI.ic),
+    },
+    minI: {
+      ia: sum(s => s.minI.ia),
+      ib: sum(s => s.minI.ib),
+      ic: sum(s => s.minI.ic),
+    },
+    dayKwh: +dailySum[dailySum.length - 1].toFixed(1),
+    monthKwh: +dailySum.reduce((a, b) => a + b, 0).toFixed(0),
+    dailyData: dailySum,
+    dailyPhaseData: phaseDailySum,
+  };
+}
+
+// Init all circuits first, then mains
+circuitBaseA.forEach((b, i) => initCircuit(circuitIdsA[i], b));
+circuitBaseB.forEach((b, i) => initCircuit(circuitIdsB[i], b));
+initMain('A-main', circuitIdsA);
+initMain('B-main', circuitIdsB);
+
+// ═══════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════
+
+function renderCircuits() {
+  function makeCard(id, name, num) {
+    const s = state[id];
+    const statuses = ['normal','normal','normal','normal','warn','alert'];
+    const sClass = statuses[Math.floor(Math.random() * 4)]; // mostly normal
+    return `
+    <div class="circuit-card status-${sClass}" id="card-${id}">
+      <div class="status-badge ${sClass}">${sClass==='normal'?'正常':sClass==='warn'?'预警':'告警'}</div>
+      <div class="circuit-name">${num} ${name}</div>
+      <!-- 三相电流+极值合并 -->
+      <div class="circuit-phases-row">
+        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ia','${num} ${name} · IA相电流趋势')">
+          <div class="circuit-phase-label">IA</div>
+          <div class="circuit-phase-live text-cyan" id="${id}-ia">—<span class="circuit-phase-live-unit">A</span></div>
+          <div class="circuit-phase-ex-divider"></div>
+          <div class="circuit-phase-ex-row">
+            <div class="circuit-phase-ex-sub">
+              <div class="circuit-phase-ex-sub-label">最大</div>
+              <div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ia">${s.maxI.ia}</div>
+            </div>
+            <div class="circuit-phase-ex-sub">
+              <div class="circuit-phase-ex-sub-label">最小</div>
+              <div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ia">${s.minI.ia}</div>
+            </div>
+          </div>
+        </div>
+        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ib','${num} ${name} · IB相电流趋势')">
+          <div class="circuit-phase-label">IB</div>
+          <div class="circuit-phase-live text-cyan" id="${id}-ib">—<span class="circuit-phase-live-unit">A</span></div>
+          <div class="circuit-phase-ex-divider"></div>
+          <div class="circuit-phase-ex-row">
+            <div class="circuit-phase-ex-sub">
+              <div class="circuit-phase-ex-sub-label">最大</div>
+              <div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ib">${s.maxI.ib}</div>
+            </div>
+            <div class="circuit-phase-ex-sub">
+              <div class="circuit-phase-ex-sub-label">最小</div>
+              <div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ib">${s.minI.ib}</div>
+            </div>
+          </div>
+        </div>
+        <div class="circuit-phase-block" onclick="openPhaseModal('${id}','ic','${num} ${name} · IC相电流趋势')">
+          <div class="circuit-phase-label">IC</div>
+          <div class="circuit-phase-live text-cyan" id="${id}-ic">—<span class="circuit-phase-live-unit">A</span></div>
+          <div class="circuit-phase-ex-divider"></div>
+          <div class="circuit-phase-ex-row">
+            <div class="circuit-phase-ex-sub">
+              <div class="circuit-phase-ex-sub-label">最大</div>
+              <div class="circuit-phase-ex-sub-val text-orange" id="${id}-max-ic">${s.maxI.ic}</div>
+            </div>
+            <div class="circuit-phase-ex-sub">
+              <div class="circuit-phase-ex-sub-label">最小</div>
+              <div class="circuit-phase-ex-sub-val text-blue" id="${id}-min-ic">${s.minI.ic}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="circuit-power" id="${id}-power">— kW</div>
+      <div class="circuit-energy-row">
+        <div class="circuit-energy-item">
+          <div class="circuit-energy-label">日用电 kWh</div>
+          <div class="circuit-energy-val text-cyan" id="${id}-day">${s.dayKwh}</div>
+        </div>
+        <div class="circuit-energy-item" onclick="openModal('${id}','${num} ${name}')">
+          <div class="circuit-energy-label">月用电 kWh ↗</div>
+          <div class="circuit-energy-val text-green" id="${id}-month">${s.monthKwh}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('circuits-A').innerHTML =
+    circuitIdsA.map((id, i) => makeCard(id, circuitNamesA[i], circuitNumsA[i])).join('');
+  document.getElementById('circuits-B').innerHTML =
+    circuitIdsB.map((id, i) => makeCard(id, circuitNamesB[i], circuitNumsB[i])).join('');
+}
+
+// ═══════════════════════════════════════════
+//  LIVE DATA UPDATE
+// ═══════════════════════════════════════════
+
+function fmtNum(n, dec=1) { return (+n).toFixed(dec); }
+
+function updateData() {
+  // ── Step 1: Generate all circuit live values ──
+  const allIds = [...circuitIdsA, ...circuitIdsB];
+  const allBases = [...circuitBaseA, ...circuitBaseB];
+  const circuitPhaseSums = { A: { ia:0, ib:0, ic:0, pow:0 }, B: { ia:0, ib:0, ic:0, pow:0 } };
+
+  allIds.forEach((id, idx) => {
+    const base = allBases[idx];
+    // Generate live current with small fluctuation around base
+    const cIa = +randF(base.ia * 0.8, base.ia * 1.2);
+    const cIb = +randF(base.ib * 0.8, base.ib * 1.2);
+    const cIc = +randF(base.ic * 0.8, base.ic * 1.2);
+    const avgC = (cIa + cIb + cIc) / 3;
+    const pf = randF(0.85, 0.96, 2);
+    const pow = +(avgC * 0.38 * pf * Math.sqrt(3)).toFixed(1);
+    const s = state[id];
+    s.liveIa = cIa; s.liveIb = cIb; s.liveIc = cIc;
+
+    // Track per-phase extremes
+    ['ia','ib','ic'].forEach(ph => {
+      const val = ph === 'ia' ? cIa : ph === 'ib' ? cIb : cIc;
+      if (val > s.maxI[ph]) s.maxI[ph] = +val.toFixed(1);
+      if (val < s.minI[ph]) s.minI[ph] = +val.toFixed(1);
+    });
+
+    // Update DOM
+    setVal(`${id}-ia`, cIa + '<span class="circuit-phase-live-unit">A</span>', 'text-cyan');
+    setVal(`${id}-ib`, cIb + '<span class="circuit-phase-live-unit">A</span>', 'text-cyan');
+    setVal(`${id}-ic`, cIc + '<span class="circuit-phase-live-unit">A</span>', 'text-cyan');
+    setVal(`${id}-power`, pow + ' kW', 'text-cyan');
+    ['max-ia','max-ib','max-ic','min-ia','min-ib','min-ic'].forEach(key => {
+      const [type, ph] = key.split('-');
+      const el = document.getElementById(`${id}-${key}`);
+      if (el) el.textContent = s[type === 'max' ? 'maxI' : 'minI'][ph];
+    });
+
+    // Accumulate for main meters
+    const group = id.startsWith('A-') ? 'A' : 'B';
+    circuitPhaseSums[group].ia += cIa;
+    circuitPhaseSums[group].ib += cIb;
+    circuitPhaseSums[group].ic += cIc;
+    circuitPhaseSums[group].pow += pow;
+  });
+
+  // ── Step 2: Derive main meter values from circuit sums (with ~2% line loss for power) ──
+  function updateMain(id, group) {
+    const s = state[id];
+    const sum = circuitPhaseSums[group];
+    const lossFactor = 1.02; // 2% line loss
+    const aIa = +sum.ia.toFixed(1);
+    const aIb = +sum.ib.toFixed(1);
+    const aIc = +sum.ic.toFixed(1);
+    const aPow = +(sum.pow * lossFactor).toFixed(1);
+    const aAvgCur = (aIa + aIb + aIc) / 3;
+    const aPf = +(aPow / (aAvgCur * 0.38 * Math.sqrt(3))).toFixed(2);
+
+    setVal(`${id}-ia`, aIa, 'text-cyan');
+    setVal(`${id}-ib`, aIb, 'text-cyan');
+    setVal(`${id}-ic`, aIc, 'text-cyan');
+    setVal(`${id}-power`, aPow, 'text-blue');
+    setVal(`${id}-pf`, Math.min(aPf, 0.99), 'text-green');
+
+    ['ia','ib','ic'].forEach(ph => {
+      const val = ph === 'ia' ? aIa : ph === 'ib' ? aIb : aIc;
+      if (val > s.maxI[ph]) s.maxI[ph] = +val.toFixed(1);
+      if (val < s.minI[ph]) s.minI[ph] = +val.toFixed(1);
+      setVal(`${id}-max-${ph}`, s.maxI[ph], 'text-orange');
+      setVal(`${id}-min-${ph}`, s.minI[ph], 'text-blue');
+    });
+    setVal(`${id}-day`, s.dayKwh, 'text-cyan');
+    setVal(`${id}-month`, s.monthKwh, 'text-green');
+    return aPow;
+  }
+
+  const aPow = updateMain('A-main', 'A');
+  const bPow = updateMain('B-main', 'B');
+
+  // ── Step 3: Overview ──
+  const totalPow = aPow + bPow;
+  const totalDay = state['A-main'].dayKwh + state['B-main'].dayKwh;
+  const totalMonth = state['A-main'].monthKwh + state['B-main'].monthKwh;
+  setVal('ov-load', totalPow.toFixed(0), 'text-cyan');
+  setVal('ov-day', totalDay.toFixed(0), 'text-blue');
+  setVal('ov-month', totalMonth.toFixed(0), 'text-green');
+}
+
+function setVal(id, val, cls) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (typeof val === 'number' || !val.includes('<')) {
+    el.textContent = val;
+  } else {
+    el.innerHTML = val;
+  }
+  el.classList.add('updating');
+  setTimeout(() => el.classList.remove('updating'), 600);
+}
+
+// ═══════════════════════════════════════════
+//  CLOCK
+// ═══════════════════════════════════════════
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('zh-CN', {hour12: false});
+  document.getElementById('datestr').textContent =
+    now.toLocaleDateString('zh-CN', {year:'numeric',month:'2-digit',day:'2-digit'});
+}
+
+// ═══════════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════════
+
+let chartInstance = null;
+
+function openModal(id, label) {
+  const s = state[id];
+  if (!s) return;
+
+  document.getElementById('modal-title').textContent = '每日用电量明细 · ' + label;
+  document.getElementById('modal-subtitle').textContent =
+    `本月已统计 ${s.dailyData.length} 天 · 合计 ${s.monthKwh} kWh`;
+
+  // Stats
+  const maxD = Math.max(...s.dailyData);
+  const minD = Math.min(...s.dailyData);
+  const avgD = (s.dailyData.reduce((a,b)=>a+b,0)/s.dailyData.length).toFixed(1);
+  document.getElementById('modal-stats').innerHTML = `
+    <div class="modal-stat">
+      <div class="modal-stat-label">月累计用电</div>
+      <div class="modal-stat-val text-green">${s.monthKwh}<span class="modal-stat-unit"> kWh</span></div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-label">日均用电</div>
+      <div class="modal-stat-val text-cyan">${avgD}<span class="modal-stat-unit"> kWh</span></div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-label">单日峰值</div>
+      <div class="modal-stat-val text-orange">${maxD}<span class="modal-stat-unit"> kWh</span></div>
+    </div>
+  `;
+
+  document.getElementById('modal-overlay').classList.add('active');
+
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+  const ctx = document.getElementById('modalChart').getContext('2d');
+  const labels = s.dailyData.map((_, i) => `${i+1}日`);
+  const avg = +avgD;
+
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: '日用电量 (kWh)',
+          data: s.dailyData,
+          backgroundColor: s.dailyData.map(v =>
+            v > avg * 1.2 ? 'rgba(255,145,0,0.7)' : 'rgba(0,170,255,0.55)'
+          ),
+          borderColor: s.dailyData.map(v =>
+            v > avg * 1.2 ? '#ff9100' : '#00aaff'
+          ),
+          borderWidth: 1,
+          borderRadius: 3,
+        },
+        {
+          label: '日均线',
+          data: new Array(s.dailyData.length).fill(avg),
+          type: 'line',
+          borderColor: 'rgba(0,229,255,0.7)',
+          borderDash: [5, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: '#7ab3d8', font: { size: 11 } }
+        },
+        tooltip: {
+          backgroundColor: '#0d1e35',
+          borderColor: '#1a3a5c',
+          borderWidth: 1,
+          titleColor: '#e8f4ff',
+          bodyColor: '#7ab3d8',
+          callbacks: {
+            label: ctx => ` ${ctx.parsed.y} kWh`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#4a7a9e', font: { size: 9 }, maxRotation: 0 },
+          grid: { color: 'rgba(26,58,92,0.5)' }
+        },
+        y: {
+          ticks: { color: '#4a7a9e', font: { size: 10 } },
+          grid: { color: 'rgba(26,58,92,0.4)' }
+        }
+      }
+    }
+  });
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('active');
+}
+
+// ═══════════════════════════════════════════
+//  PHASE CURRENT TREND MODAL
+// ═══════════════════════════════════════════
+
+function openPhaseModal(id, phase, label) {
+  const s = state[id];
+  if (!s || !s.dailyPhaseData) return;
+
+  const phaseLabel = phase.toUpperCase();
+  const data = s.dailyPhaseData[phase];
+  const curMax = s.maxI[phase];
+  const curMin = s.minI[phase];
+  const avgVal = (data.reduce((a,b)=>a+b,0)/data.length).toFixed(1);
+  const peakVal = Math.max(...data);
+  const valleyVal = Math.min(...data);
+
+  document.getElementById('modal-title').textContent = phaseLabel + '相电流月度趋势 · ' + label;
+  document.getElementById('modal-subtitle').textContent =
+    `历史极值 → 最大 ${curMax}A / 最小 ${curMin}A  ·  本月已统计 ${data.length} 天`;
+
+  document.getElementById('modal-stats').innerHTML = `
+    <div class="modal-stat">
+      <div class="modal-stat-label">历史最大电流</div>
+      <div class="modal-stat-val text-orange">${curMax}<span class="modal-stat-unit"> A</span></div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-label">日均电流</div>
+      <div class="modal-stat-val text-cyan">${avgVal}<span class="modal-stat-unit"> A</span></div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-label">历史最小电流</div>
+      <div class="modal-stat-val text-blue">${curMin}<span class="modal-stat-unit"> A</span></div>
+    </div>
+  `;
+
+  document.getElementById('modal-overlay').classList.add('active');
+
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+  const ctx = document.getElementById('modalChart').getContext('2d');
+  const labels = data.map((_, i) => `${i+1}日`);
+  const avg = +avgVal;
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: `${phaseLabel}相日电流 (A)`,
+          data: data,
+          borderColor: '#00e5ff',
+          backgroundColor: 'rgba(0,229,255,0.08)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#00e5ff',
+          pointBorderColor: '#0d1e35',
+          pointBorderWidth: 1.5,
+          tension: 0.35,
+          fill: true,
+        },
+        {
+          label: '日均线',
+          data: new Array(data.length).fill(avg),
+          type: 'line',
+          borderColor: 'rgba(255,215,64,0.7)',
+          borderDash: [5, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: '#7ab3d8', font: { size: 11 } }
+        },
+        tooltip: {
+          backgroundColor: '#0d1e35',
+          borderColor: '#1a3a5c',
+          borderWidth: 1,
+          titleColor: '#e8f4ff',
+          bodyColor: '#7ab3d8',
+          callbacks: {
+            label: ctx => ` ${ctx.parsed.y} A`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#4a7a9e', font: { size: 9 }, maxRotation: 0 },
+          grid: { color: 'rgba(26,58,92,0.5)' }
+        },
+        y: {
+          ticks: { color: '#4a7a9e', font: { size: 10 } },
+          grid: { color: 'rgba(26,58,92,0.4)' }
+        }
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════
+//  EXPORT CSV
+// ═══════════════════════════════════════════
+
+function csvEscape(cell) {
+  const s = String(cell);
+  return s.includes(',') || s.includes('"') || s.includes('\n')
+    ? '"' + s.replace(/"/g, '""') + '"'
+    : s;
+}
+
+function exportCSV() {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('zh-CN', {year:'numeric', month:'2-digit', day:'2-digit'}).replace(/\//g, '-');
+  const timeStr = now.toLocaleTimeString('zh-CN', {hour12: false});
+
+  // ── 所有线路元数据（顺序：总表A → 分表A → 总表B → 分表B）
+  const allEntries = [
+    { id: 'A-main', num: 'ZB-01', name: '1号变压器总表',  tr: 'T-01 (800kVA)'  },
+    ...circuitIdsA.map((id, i) => ({ id, num: circuitNumsA[i], name: circuitNamesA[i], tr: 'T-01 (800kVA)'  })),
+    { id: 'B-main', num: 'ZB-02', name: '2号变压器总表',  tr: 'T-02 (1000kVA)' },
+    ...circuitIdsB.map((id, i) => ({ id, num: circuitNumsB[i], name: circuitNamesB[i], tr: 'T-02 (1000kVA)' })),
+  ];
+
+  // ══════════════════════════════════
+  //  第一区块：今日用电量汇总 + 三相电流历史极值
+  // ══════════════════════════════════
+  const rows = [];
+  rows.push(['【今日用电量汇总】', '导出时间：' + dateStr + ' ' + timeStr]);
+  rows.push(['表计编号', '线路名称', '归属变压器', 'IA最大值(A)', 'IB最大值(A)', 'IC最大值(A)', 'IA最小值(A)', 'IB最小值(A)', 'IC最小值(A)', '今日用电量(kWh)']);
+
+  allEntries.forEach(e => {
+    const s = state[e.id];
+    rows.push([
+      e.num, e.name, e.tr,
+      s.maxI.ia, s.maxI.ib, s.maxI.ic,
+      s.minI.ia, s.minI.ib, s.minI.ic,
+      s.dayKwh
+    ]);
+  });
+
+  const totalDay = state['A-main'].dayKwh + state['B-main'].dayKwh;
+  rows.push(['合计', '全厂今日用电', '', '', '', '', '', '', '', totalDay]);
+
+  // ══════════════════════════════════
+  //  第二区块：月度每日用电明细（横向：日期为行，线路为列）
+  // ══════════════════════════════════
+  rows.push(['']);
+  rows.push(['【本月每日用电量明细(kWh)】']);
+
+  // 表头行：日期 + 各线路名
+  const headerRow = ['日期', ...allEntries.map(e => `${e.num} ${e.name}`)];
+  rows.push(headerRow);
+
+  // 数据行：1日~28日，每行是当日所有线路的用电量
+  const dayCount = state['A-main'].dailyData.length; // 28
+  for (let d = 0; d < dayCount; d++) {
+    const row = [`${d + 1}日`];
+    allEntries.forEach(e => {
+      row.push(state[e.id].dailyData[d] ?? '');
+    });
+    rows.push(row);
+  }
+
+  // 末尾加月合计行
+  const monthTotalRow = ['月合计'];
+  allEntries.forEach(e => {
+    monthTotalRow.push(state[e.id].monthKwh);
+  });
+  rows.push(monthTotalRow);
+
+  // ── 生成 CSV（UTF-8 BOM，Excel 中文不乱码）
+  const csvContent = '\uFEFF' + rows
+    .map(row => row.map(csvEscape).join(','))
+    .join('\r\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `智慧用电_用电报表_${dateStr}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  // ── 按钮反馈动效
+  const btn = document.getElementById('export-btn');
+  const orig = btn.innerHTML;
+  btn.innerHTML = `
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    导出成功`;
+  btn.classList.add('done');
+  btn.style.color = 'var(--accent-green)';
+  btn.style.borderColor = 'rgba(0,230,118,0.5)';
+  setTimeout(() => {
+    btn.innerHTML = orig;
+    btn.classList.remove('done');
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }, 2000);
+}
+
+// ═══════════════════════════════════════════
+//  BOOTSTRAP
+// ═══════════════════════════════════════════
+
+renderCircuits();
+updateData();
+updateClock();
+setInterval(updateData, 5000);
+setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
